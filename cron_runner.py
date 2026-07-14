@@ -1,0 +1,119 @@
+import yfinance as yf
+import pandas as pd
+import ta
+import urllib.request
+import urllib.parse
+import os
+from datetime import date, timedelta
+
+# -------------------------------------------------------------
+# TELEGRAM NOTIFICATION HELPER
+# -------------------------------------------------------------
+def send_telegram_message(token, chat_id, message):
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = urllib.parse.urlencode({"chat_id": chat_id, "text": message, "parse_mode": "Markdown"}).encode("utf-8")
+    try:
+        req = urllib.request.Request(url, data=data)
+        with urllib.request.urlopen(req, timeout=10) as response:
+            return response.read()
+    except Exception as e:
+        print(f"Error sending Telegram message: {e}")
+        return None
+
+# -------------------------------------------------------------
+# INDICATORS & SIGNAL LOGIC
+# -------------------------------------------------------------
+def calculate_indicators(df):
+    df = df.copy()
+    
+    # Flatten MultiIndex columns if present
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+    # Remove duplicate columns
+    df = df.loc[:, ~df.columns.duplicated()]
+    
+    # Technical Indicators
+    df['RSI'] = ta.momentum.RSIIndicator(df['Close']).rsi()
+    macd_obj = ta.trend.MACD(df['Close'])
+    df['MACD'] = macd_obj.macd()
+    df['MACD_Signal'] = macd_obj.macd_signal()
+    df['MA200'] = df['Close'].rolling(200).mean()
+    df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
+    
+    def get_signal(row):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['MA200']) or pd.isna(row['Vol_SMA20']):
+            return 'HOLD'
+        
+        is_buy = (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Close'] > row['MA200']) and (row['Volume'] > row['Vol_SMA20'])
+        is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal'])
+        
+        if is_buy:
+            return 'BUY'
+        elif is_sell:
+            return 'SELL'
+        return 'HOLD'
+        
+    df['Signal'] = df.apply(get_signal, axis=1)
+    return df
+
+# -------------------------------------------------------------
+# MAIN CRON SCANNER
+# -------------------------------------------------------------
+def main():
+    # 1. Load credentials from Environment Variables (GitHub Secrets)
+    token = os.environ.get("TELEGRAM_BOT_TOKEN")
+    chat_id = os.environ.get("TELEGRAM_CHAT_ID")
+    
+    if not token or not chat_id:
+        print("CRITICAL: TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID environment variables are missing.")
+        return
+        
+    tickers = [
+        "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
+        "BHARTIARTL.NS", "SBIN.NS", "ITC.NS", "HINDUNILVR.NS", "LT.NS",
+        "AXISBANK.NS", "KOTAKBANK.NS", "TATASTEEL.NS", "M&M.NS", "ASIANPAINT.NS"
+    ]
+    
+    print(f"Starting scheduled market close scan for {date.today()}...")
+    
+    # We download 1 year of daily history to ensure MA200 is fully populated
+    start_date = date.today() - timedelta(days=365)
+    
+    for ticker in tickers:
+        try:
+            df = yf.download(ticker, start=str(start_date), end=str(date.today() + timedelta(days=1)), progress=False)
+            if df.empty or len(df) < 200:
+                print(f"Skipping {ticker}: Empty or insufficient data.")
+                continue
+                
+            df = calculate_indicators(df)
+            
+            latest = df.iloc[-1]
+            prev = df.iloc[-2]
+            
+            ticker_clean = ticker.split(".")[0]  # E.g. RELIANCE instead of RELIANCE.NS
+            price = float(latest['Close'])
+            
+            today_signal = latest['Signal']
+            yesterday_signal = prev['Signal']
+            
+            print(f"[{ticker}] Yesterday: {yesterday_signal} -> Today: {today_signal} (Price: ₹{price:.2f})")
+            
+            # 2. Stateless Signal Transition Logic
+            if today_signal != yesterday_signal:
+                if today_signal == "BUY":
+                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Close Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\nTrend is bullish, RSI is oversold, momentum is positive, and volume confirms the move."
+                    send_telegram_message(token, chat_id, msg)
+                    print(f"Sent BUY alert for {ticker}")
+                elif today_signal == "SELL":
+                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Close Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\nOverbought threshold reached or momentum crossover occurred."
+                    send_telegram_message(token, chat_id, msg)
+                    print(f"Sent SELL alert for {ticker}")
+                    
+        except Exception as e:
+            print(f"Error evaluating {ticker}: {e}")
+            
+    print("Scan completed successfully.")
+
+if __name__ == "__main__":
+    main()
