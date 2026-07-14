@@ -4,7 +4,26 @@ import ta
 import urllib.request
 import urllib.parse
 import os
+import json
 from datetime import date, timedelta
+
+CACHE_FILE = "last_signals.json"
+
+def get_last_signals():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+def save_current_signals(signals_dict):
+    try:
+        with open(CACHE_FILE, "w") as f:
+            json.dump(signals_dict, f)
+    except Exception:
+        pass
 
 # -------------------------------------------------------------
 # TELEGRAM NOTIFICATION HELPER
@@ -81,10 +100,13 @@ def main():
         "TECHM.NS", "TITAN.NS", "ULTRACEMCO.NS", "WIPRO.NS"
     ]
     
-    print(f"Starting scheduled market close scan for {date.today()}...")
+    print(f"Starting scheduled market scan for {date.today()}...")
     
     # We download 1 year of daily history to ensure MA200 is fully populated
     start_date = date.today() - timedelta(days=365)
+    
+    last_signals = get_last_signals()
+    current_signals = {}
     
     for ticker in tickers:
         try:
@@ -96,32 +118,36 @@ def main():
             df = calculate_indicators(df)
             
             latest = df.iloc[-1]
-            prev = df.iloc[-2]
             
             ticker_clean = ticker.split(".")[0]  # E.g. RELIANCE instead of RELIANCE.NS
             price = float(latest['Close'])
             
             today_signal = latest['Signal']
-            yesterday_signal = prev['Signal']
+            current_signals[ticker] = today_signal
             
-            print(f"[{ticker}] Yesterday: {yesterday_signal} -> Today: {today_signal} (Price: Rs.{price:.2f})")
+            # Retrieve cached signal
+            prev_signal = last_signals.get(ticker, "HOLD")
             
-            # 2. Stateless Signal Transition Logic
-            if today_signal != yesterday_signal:
+            print(f"[{ticker}] Previous Cached: {prev_signal} -> Today: {today_signal} (Price: Rs.{price:.2f})")
+            
+            # 2. Caching-based Signal Transition Logic (Prevents double alerting during the day)
+            if today_signal != prev_signal:
                 if today_signal == "BUY":
                     target_price = price * 1.05
                     stop_loss = price * 0.97
-                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* BUY tomorrow (Market Open)\n*Entry Price:* ₹{price:.2f} (Today's Close)\n*Target Price (+5%):* ₹{target_price:.2f}\n*Stop Loss (-3%):* ₹{stop_loss:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
+                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* BUY (Market Open / Live)\n*Entry Price:* ₹{price:.2f}\n*Target Price (+5%):* ₹{target_price:.2f}\n*Stop Loss (-3%):* ₹{stop_loss:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
                     send_telegram_message(token, chat_id, msg)
                     print(f"Sent BUY alert for {ticker}")
                 elif today_signal == "SELL":
-                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* SELL / Exit tomorrow\n*Exit Price:* ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
+                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* SELL / Exit immediately\n*Exit Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
                     send_telegram_message(token, chat_id, msg)
                     print(f"Sent SELL alert for {ticker}")
                     
         except Exception as e:
             print(f"Error evaluating {ticker}: {e}")
             
+    # Save the current states for the next run
+    save_current_signals(current_signals)
     print("Scan completed successfully.")
 
 if __name__ == "__main__":
