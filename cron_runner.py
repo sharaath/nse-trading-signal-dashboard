@@ -109,11 +109,13 @@ def main():
             # 2. Stateless Signal Transition Logic
             if today_signal != yesterday_signal:
                 if today_signal == "BUY":
-                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* BUY tomorrow (Market Open)\n*Target Entry Price:* Around ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
+                    target_price = price * 1.05
+                    stop_loss = price * 0.97
+                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* BUY tomorrow (Market Open)\n*Entry Price:* ₹{price:.2f} (Today's Close)\n*Target Price (+5%):* ₹{target_price:.2f}\n*Stop Loss (-3%):* ₹{stop_loss:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
                     send_telegram_message(token, chat_id, msg)
                     print(f"Sent BUY alert for {ticker}")
                 elif today_signal == "SELL":
-                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* SELL / Exit tomorrow\n*Target Exit Price:* Around ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
+                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* SELL / Exit tomorrow\n*Exit Price:* ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
                     send_telegram_message(token, chat_id, msg)
                     print(f"Sent SELL alert for {ticker}")
                     

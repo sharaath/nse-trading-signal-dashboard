@@ -189,16 +189,23 @@ with st.sidebar.expander("🔔 Telegram Alerts Config"):
 # -------------------------------------------------------------
 if app_mode == "Multi-Stock Dashboard":
     st.title("📊 NSE Multi-Stock Dashboard")
-    st.caption("Real-time monitoring of 15 key Nifty 50 stocks using our confirmation trading strategy.")
+    st.caption("Real-time monitoring of the Nifty 50 index using our confirmation trading strategy.")
     
     tickers = [
-        "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
-        "BHARTIARTL.NS", "SBIN.NS", "ITC.NS", "HINDUNILVR.NS", "LT.NS",
-        "AXISBANK.NS", "KOTAKBANK.NS", "TATASTEEL.NS", "M&M.NS", "ASIANPAINT.NS"
+        "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
+        "BAJAJ-AUTO.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "BHARTIARTL.NS", "BPCL.NS",
+        "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DIVISLAB.NS", "DRREDDY.NS",
+        "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS", "HDFCLIFE.NS",
+        "HEROMOTOCO.NS", "HINDALCO.NS", "HINDUNILVR.NS", "ICICIBANK.NS", "INDUSINDBK.NS",
+        "INFY.NS", "ITC.NS", "JSWSTEEL.NS", "KOTAKBANK.NS", "LT.NS",
+        "LTIM.NS", "M&M.NS", "MARUTI.NS", "NESTLEIND.NS", "NTPC.NS",
+        "ONGC.NS", "POWERGRID.NS", "RELIANCE.NS", "SBILIFE.NS", "SBIN.NS",
+        "SUNPHARMA.NS", "TATACONSUM.NS", "TATAMOTORS.NS", "TATASTEEL.NS", "TCS.NS",
+        "TECHM.NS", "TITAN.NS", "ULTRACEMCO.NS", "WIPRO.NS"
     ]
     
     # Analyze all tickers
-    with st.spinner("Analyzing Nifty 15 tickers..."):
+    with st.spinner("Analyzing Nifty 50 tickers..."):
         results = []
         # Need 1 year of daily data to ensure reliable MA200 calculations
         start_date_dash = date.today() - timedelta(days=365)
@@ -240,10 +247,12 @@ if app_mode == "Multi-Stock Dashboard":
                     if signal != prev_signal:
                         price = {row['Ticker']: row['Price (₹)'] for row in results}[ticker]
                         if signal == "BUY":
-                            msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker}`\n*Price:* ₹{price:.2f}\n*Time:* {date.today()}\n\nTrend filter, RSI, MACD, and volume parameters have all aligned!"
+                            target_price = price * 1.05
+                            stop_loss = price * 0.97
+                            msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker}`\n*Action:* BUY tomorrow (Market Open)\n*Entry Price:* ₹{price:.2f} (Today's Close)\n*Target Price (+5%):* ₹{target_price:.2f}\n*Stop Loss (-3%):* ₹{stop_loss:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
                             send_telegram_message(token_input, chat_id_input, msg)
                         elif signal == "SELL":
-                            msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker}`\n*Price:* ₹{price:.2f}\n*Time:* {date.today()}\n\nOverbought threshold reached or momentum has reversed."
+                            msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker}`\n*Action:* SELL / Exit tomorrow\n*Exit Price:* ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
                             send_telegram_message(token_input, chat_id_input, msg)
             
             # Save the current states for the next run
