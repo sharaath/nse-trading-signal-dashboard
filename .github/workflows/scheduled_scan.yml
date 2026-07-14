@@ -2,7 +2,7 @@ name: Daily NSE Ticker Scan
 
 on:
   schedule:
-    - cron: '15 10 * * 1-5' # 10:15 UTC (3:45 PM IST) Monday to Friday
+    - cron: '30 11 * * 1-5' # 11:30 UTC (5:00 PM IST) Monday to Friday
   workflow_dispatch: # Allows manual trigger from the Actions tab on GitHub website
 
 jobs:

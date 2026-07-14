@@ -69,9 +69,16 @@ def main():
         return
         
     tickers = [
-        "RELIANCE.NS", "TCS.NS", "INFY.NS", "HDFCBANK.NS", "ICICIBANK.NS",
-        "BHARTIARTL.NS", "SBIN.NS", "ITC.NS", "HINDUNILVR.NS", "LT.NS",
-        "AXISBANK.NS", "KOTAKBANK.NS", "TATASTEEL.NS", "M&M.NS", "ASIANPAINT.NS"
+        "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
+        "BAJAJ-AUTO.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "BHARTIARTL.NS", "BPCL.NS",
+        "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DIVISLAB.NS", "DRREDDY.NS",
+        "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS", "HDFCLIFE.NS",
+        "HEROMOTOCO.NS", "HINDALCO.NS", "HINDUNILVR.NS", "ICICIBANK.NS", "INDUSINDBK.NS",
+        "INFY.NS", "ITC.NS", "JSWSTEEL.NS", "KOTAKBANK.NS", "LT.NS",
+        "LTIM.NS", "M&M.NS", "MARUTI.NS", "NESTLEIND.NS", "NTPC.NS",
+        "ONGC.NS", "POWERGRID.NS", "RELIANCE.NS", "SBILIFE.NS", "SBIN.NS",
+        "SUNPHARMA.NS", "TATACONSUM.NS", "TATAMOTORS.NS", "TATASTEEL.NS", "TCS.NS",
+        "TECHM.NS", "TITAN.NS", "ULTRACEMCO.NS", "WIPRO.NS"
     ]
     
     print(f"Starting scheduled market close scan for {date.today()}...")
@@ -102,11 +109,11 @@ def main():
             # 2. Stateless Signal Transition Logic
             if today_signal != yesterday_signal:
                 if today_signal == "BUY":
-                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Close Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\nTrend is bullish, RSI is oversold, momentum is positive, and volume confirms the move."
+                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* BUY tomorrow (Market Open)\n*Target Entry Price:* Around ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
                     send_telegram_message(token, chat_id, msg)
                     print(f"Sent BUY alert for {ticker}")
                 elif today_signal == "SELL":
-                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Close Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\nOverbought threshold reached or momentum crossover occurred."
+                    msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* SELL / Exit tomorrow\n*Target Exit Price:* Around ₹{price:.2f} (Today's Close)\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
                     send_telegram_message(token, chat_id, msg)
                     print(f"Sent SELL alert for {ticker}")
                     
