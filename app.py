@@ -40,12 +40,21 @@ st.markdown("""
 @st.cache_data(ttl=1800)  # Cache data for 30 minutes to improve performance
 def get_ticker_data(ticker, start_date, end_date):
     try:
-        df = yf.download(ticker, start=str(start_date), end=str(end_date), progress=False)
+        # Check for spaces in ticker name to prevent yfinance from treating it as multiple tickers
+        ticker_clean = ticker.strip()
+        if not ticker_clean:
+            return None
+        if len(ticker_clean.split()) > 1:
+            raise ValueError("Ticker symbol cannot contain spaces.")
+            
+        df = yf.download(ticker_clean, start=str(start_date), end=str(end_date), progress=False)
         if df.empty:
             return None
         # Flatten MultiIndex columns if present
         if isinstance(df.columns, pd.MultiIndex):
             df.columns = df.columns.get_level_values(0)
+        # Remove duplicate column names
+        df = df.loc[:, ~df.columns.duplicated()]
         return df
     except Exception as e:
         st.sidebar.error(f"Error fetching data for {ticker}: {e}")
@@ -56,6 +65,8 @@ def calculate_indicators(df):
         return df
     
     df = df.copy()
+    # Deduplicate column names to prevent duplicate Series extraction issues
+    df = df.loc[:, ~df.columns.duplicated()]
     
     # 1. RSI Indicator
     df['RSI'] = ta.momentum.RSIIndicator(df['Close']).rsi()
@@ -258,16 +269,20 @@ else:
         start_date = st.date_input("Analysis Start Date", value=pd.to_datetime("2024-01-01"))
         
     if st.button("Run Deep Analysis"):
-        with st.spinner(f"Downloading and calculating indicators for {symbol}..."):
-            df = get_ticker_data(symbol, start_date, date.today())
-            
-        if df is None or df.empty:
-            st.error(f"No data found for symbol '{symbol}'. Ensure it is written correctly (add '.NS' for NSE stocks).")
-        elif len(df) < 200:
-            st.warning(f"Data contains only {len(df)} entries. At least 200 trading days are required to calculate the 200-period MA correctly.")
+        symbol = symbol.strip()
+        if " " in symbol:
+            st.error("⚠️ Ticker symbol cannot contain spaces. If you are looking for index options, use the exact Yahoo Finance ticker symbol format without spaces (e.g. `^NSEI` for Nifty 50 Index, or specific option symbols like `NIFTY260716C24000`).")
         else:
-            df = calculate_indicators(df)
-            latest = df.iloc[-1]
+            with st.spinner(f"Downloading and calculating indicators for {symbol}..."):
+                df = get_ticker_data(symbol, start_date, date.today())
+                
+            if df is None or df.empty:
+                st.error(f"No data found for symbol '{symbol}'. Ensure it is written correctly (add '.NS' for NSE stocks).")
+            elif len(df) < 200:
+                st.warning(f"Data contains only {len(df)} entries. At least 200 trading days are required to calculate the 200-period MA correctly.")
+            else:
+                df = calculate_indicators(df)
+                latest = df.iloc[-1]
             
             # Today's Signal Header Card
             st.subheader("Today's Analysis Summary")
