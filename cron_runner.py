@@ -97,7 +97,7 @@ def main():
             today_signal = latest['Signal']
             yesterday_signal = prev['Signal']
             
-            print(f"[{ticker}] Yesterday: {yesterday_signal} -> Today: {today_signal} (Price: ₹{price:.2f})")
+            print(f"[{ticker}] Yesterday: {yesterday_signal} -> Today: {today_signal} (Price: Rs.{price:.2f})")
             
             # 2. Stateless Signal Transition Logic
             if today_signal != yesterday_signal:
