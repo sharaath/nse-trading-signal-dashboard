@@ -4,6 +4,38 @@ import pandas as pd
 import plotly.graph_objects as go
 import ta
 from datetime import date, timedelta
+import urllib.request
+import urllib.parse
+import json
+import os
+
+CACHE_FILE = "last_signals.json"
+
+def send_telegram_message(token, chat_id, message):
+    url = f"https://api.telegram.org/bot{token}/sendMessage"
+    data = urllib.parse.urlencode({"chat_id": chat_id, "text": message, "parse_mode": "Markdown"}).encode("utf-8")
+    try:
+        req = urllib.request.Request(url, data=data)
+        with urllib.request.urlopen(req, timeout=10) as response:
+            return response.read()
+    except Exception:
+        return None
+
+def get_last_signals():
+    if os.path.exists(CACHE_FILE):
+        try:
+            with open(CACHE_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+def save_current_signals(signals_dict):
+    try:
+        with open(CACHE_FILE, "w") as f:
+            json.dump(signals_dict, f)
+    except Exception:
+        pass
 
 # Set page config for a wider dashboard layout and custom title
 st.set_page_config(page_title="NSE Trading Signal Dashboard", layout="wide", initial_sidebar_state="expanded")
@@ -132,6 +164,26 @@ st.sidebar.markdown("""
 - MACD < Signal Line
 """)
 
+# Telegram Sidebar Section
+st.sidebar.markdown("---")
+telegram_token = st.secrets.get("TELEGRAM_BOT_TOKEN", "")
+telegram_chat_id = st.secrets.get("TELEGRAM_CHAT_ID", "")
+
+with st.sidebar.expander("🔔 Telegram Alerts Config"):
+    token_input = st.text_input("Bot Token", value=telegram_token, type="password", help="Get from @BotFather")
+    chat_id_input = st.text_input("Chat ID", value=telegram_chat_id, help="Get from @userinfobot")
+    
+    if st.button("Send Test Alert"):
+        if token_input and chat_id_input:
+            test_res = send_telegram_message(token_input, chat_id_input, "📈 *NSE Signal App Connection Test*\n\nIf you are reading this, your Telegram Bot alerts are fully working!")
+            if test_res:
+                st.success("Test alert sent!")
+            else:
+                st.error("Failed to send. Double check credentials and make sure you've sent /start to the bot.")
+        else:
+            st.warning("Please enter both Token and Chat ID.")
+
+
 # -------------------------------------------------------------
 # VIEW 1: MULTI-STOCK DASHBOARD
 # -------------------------------------------------------------
@@ -176,6 +228,26 @@ if app_mode == "Multi-Stock Dashboard":
         
         if results:
             df_results = pd.DataFrame(results)
+            
+            # --- TELEGRAM ALERTS EVALUATION ---
+            last_signals = get_last_signals()
+            current_signals = {row['Ticker']: row['Signal'] for row in results}
+            
+            # Only trigger alerts if a baseline exists to avoid flood on startup
+            if last_signals and token_input and chat_id_input:
+                for ticker, signal in current_signals.items():
+                    prev_signal = last_signals.get(ticker, "HOLD")
+                    if signal != prev_signal:
+                        price = {row['Ticker']: row['Price (₹)'] for row in results}[ticker]
+                        if signal == "BUY":
+                            msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker}`\n*Price:* ₹{price:.2f}\n*Time:* {date.today()}\n\nTrend filter, RSI, MACD, and volume parameters have all aligned!"
+                            send_telegram_message(token_input, chat_id_input, msg)
+                        elif signal == "SELL":
+                            msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker}`\n*Price:* ₹{price:.2f}\n*Time:* {date.today()}\n\nOverbought threshold reached or momentum has reversed."
+                            send_telegram_message(token_input, chat_id_input, msg)
+            
+            # Save the current states for the next run
+            save_current_signals(current_signals)
             
             # Map emojis to signals for display
             signal_emoji = {"BUY": "🟢 BUY", "SELL": "🔴 SELL", "HOLD": "🟡 HOLD"}
