@@ -1,5 +1,5 @@
 services:
-  # 1. FastAPI REST API Web Service (Runs Web API, Scanner, and Telegram Bot consolidated)
+  # 1. FastAPI REST API Web Service (Consolidated Backend)
   - type: web
     name: market-signal-bot-api
     env: python
@@ -7,9 +7,7 @@ services:
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
     envVars:
       - key: DATABASE_URL
-        fromDatabase:
-          name: market-signal-db
-          property: connectionString
+        value: "sqlite:///local_prod.db"
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: PERSONAL_USE_ONLY
@@ -29,7 +27,3 @@ services:
           name: market-signal-bot-api
           type: web
           property: host
-
-databases:
-  - name: market-signal-db
-    plan: free
