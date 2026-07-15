@@ -39,8 +39,7 @@ def test_signal_generation():
     provider = MockDataProvider(mode="bullish")
     df = provider.get_history("MOCK_STOCK")
     
-    # Generate signal using consensus engine
-    analysis = calculate_consensus_signal(df, ["ema_crossover", "rsi"])
+    analysis = calculate_consensus_signal(df, ["ema_crossover", "rsi"], symbol="^NSEI")
     
     assert "signal" in analysis
     assert "confidence" in analysis

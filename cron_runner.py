@@ -110,12 +110,13 @@ def calculate_indicators(df):
     df['MACD_Diff'] = macd_obj.macd_diff()
     df['MA200'] = df['Close'].rolling(200).mean()
     df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
+    df['ADX'] = ta.trend.ADXIndicator(df['High'], df['Low'], df['Close']).adx()
     
     def get_signal(row):
-        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['MA200']) or pd.isna(row['Vol_SMA20']):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['MA200']) or pd.isna(row['Vol_SMA20']) or pd.isna(row['ADX']):
             return 'HOLD'
         
-        is_buy = (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Close'] > row['MA200']) and (row['Volume'] > row['Vol_SMA20'])
+        is_buy = (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Close'] > row['MA200']) and (row['Volume'] > 1.5 * row['Vol_SMA20']) and (row['ADX'] > 25)
         is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal'])
         
         if is_buy:
@@ -127,7 +128,7 @@ def calculate_indicators(df):
     df['Signal'] = df.apply(get_signal, axis=1)
     return df
 
-def calculate_intraday_indicators(df):
+def calculate_intraday_indicators(df, ticker):
     df = df.copy()
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
@@ -140,12 +141,27 @@ def calculate_intraday_indicators(df):
     df['MACD_Diff'] = macd_obj.macd_diff()
     df['EMA20'] = ta.trend.EMAIndicator(df['Close'], window=20).ema_indicator()
     df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
+    df['ADX'] = ta.trend.ADXIndicator(df['High'], df['Low'], df['Close']).adx()
+    
+    # Download daily history to calculate SMA200 alignment
+    is_above_daily_sma200 = True
+    try:
+        daily_df = yf.download(ticker, period="1y", interval="1d", progress=False)
+        if isinstance(daily_df.columns, pd.MultiIndex):
+            daily_df.columns = daily_df.columns.get_level_values(0)
+        daily_df = daily_df.loc[:, ~daily_df.columns.duplicated()]
+        daily_df['MA200'] = daily_df['Close'].rolling(200).mean()
+        daily_sma200 = float(daily_df.iloc[-1]['MA200'])
+        daily_close = float(daily_df.iloc[-1]['Close'])
+        is_above_daily_sma200 = daily_close > daily_sma200
+    except Exception:
+        pass
     
     def get_signal(row):
-        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['EMA20']) or pd.isna(row['Vol_SMA20']):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['EMA20']) or pd.isna(row['Vol_SMA20']) or pd.isna(row['ADX']):
             return 'HOLD'
         
-        is_buy = (row['Close'] > row['EMA20']) and (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Volume'] > row['Vol_SMA20'])
+        is_buy = (row['Close'] > row['EMA20']) and (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Volume'] > 1.5 * row['Vol_SMA20']) and (row['ADX'] > 25) and is_above_daily_sma200
         is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal']) or (row['Close'] < row['EMA20'])
         
         if is_buy:
@@ -421,7 +437,7 @@ def main():
                 print(f"Skipping {ticker} Intraday: Empty or insufficient data.")
                 failed_scans += 1
             else:
-                df_15m = calculate_intraday_indicators(df_15m)
+                df_15m = calculate_intraday_indicators(df_15m, ticker)
                 latest_live_15m = df_15m.iloc[-1]
                 price_15m = float(latest_live_15m['Close'])
                 

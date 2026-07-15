@@ -77,8 +77,7 @@ def run_market_scan():
         latest_row = df.iloc[-1]
         close_price = float(latest_row['Close'])
         
-        # Calculate consensus signal
-        analysis = calculate_consensus_signal(df, enabled_strats)
+        analysis = calculate_consensus_signal(df, enabled_strats, symbol=symbol)
         sig = analysis['signal']
         
         # Check transition to prevent spam

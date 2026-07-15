@@ -1,8 +1,9 @@
 import pandas as pd
 import ta
+import yfinance as yf
 from typing import Dict, Any, List
 
-def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] = None) -> Dict[str, Any]:
+def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] = None, symbol: str = None) -> Dict[str, Any]:
     """
     Evaluates indicators on the latest completed row (df.iloc[-2]) and returns:
     - Signal: BUY, SELL, or HOLD
@@ -35,7 +36,11 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
     bb_obj = ta.volatility.BollingerBands(df['Close'])
     df['BB_High'] = bb_obj.bollinger_hband()
     df['BB_Low'] = bb_obj.bollinger_lband()
-    
+
+    # 5. Accuracy Indicators (ADX & Volume SMA)
+    df['ADX'] = ta.trend.ADXIndicator(df['High'], df['Low'], df['Close']).adx()
+    df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
+
     # We evaluate on the last completed row (index -2) to prevent repainting live candles
     row = df.iloc[-2]
     prev_row = df.iloc[-3]
@@ -103,6 +108,42 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
     # We require at least 50% consensus (2 of 4 agree) to trigger a BUY or SELL
     if confidence < 50.0:
         signal = "HOLD"
+
+    # --- Apply Accuracy Filters on BUY Signals ---
+    if signal == "BUY":
+        # 1. ADX Trend Filter
+        adx_val = row.get('ADX', 0)
+        # 2. Volume Expansion Filter
+        vol_val = row.get('Volume', 0)
+        vol_sma = row.get('Vol_SMA20', 0)
+        # 3. Daily Trend Alignment
+        is_above_daily_sma200 = True
+        if symbol:
+            try:
+                daily_df = yf.download(symbol, period="1y", interval="1d", progress=False)
+                if isinstance(daily_df.columns, pd.MultiIndex):
+                    daily_df.columns = daily_df.columns.get_level_values(0)
+                daily_df = daily_df.loc[:, ~daily_df.columns.duplicated()]
+                daily_df['MA200'] = daily_df['Close'].rolling(200).mean()
+                daily_sma200 = float(daily_df.iloc[-1]['MA200'])
+                daily_close = float(daily_df.iloc[-1]['Close'])
+                is_above_daily_sma200 = daily_close > daily_sma200
+            except Exception:
+                pass
+                
+        reasons_filtered = []
+        if adx_val <= 25:
+            reasons_filtered.append(f"trend strength is weak (ADX={adx_val:.1f} <= 25)")
+        if vol_val < 1.5 * vol_sma:
+            reasons_filtered.append(f"volume expansion is low (Vol={vol_val:.0f} < 1.5x average={1.5*vol_sma:.0f})")
+        if not is_above_daily_sma200:
+            reasons_filtered.append("price is below daily 200-day SMA")
+            
+        if reasons_filtered:
+            signal = "HOLD"
+            reason = f"Bullish consensus ignored due to: {', '.join(reasons_filtered)}"
+            triggered = []
+            confidence = 0.0
         
     return {
         "signal": signal,
