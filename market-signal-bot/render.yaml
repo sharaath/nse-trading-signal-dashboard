@@ -12,7 +12,7 @@ services:
           property: connectionString
 
   # 2. Scanning Scheduler Worker
-  - type: worker
+  - type: web
     name: market-signal-bot-worker
     env: python
     buildCommand: pip install -r requirements.txt
@@ -30,7 +30,7 @@ services:
         value: "true"
 
   # 3. Telegram Command Bot Listener
-  - type: worker
+  - type: web
     name: market-signal-bot-bot
     env: python
     buildCommand: pip install -r requirements.txt

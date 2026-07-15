@@ -141,15 +141,28 @@ def main():
         print("Note that public distribution of trading recommendations in India may require SEBI registration.")
         print("="*80 + "\n")
         
-    # Start Scheduler
-    scheduler = BlockingScheduler()
-    # Runs scan every 15 minutes
+    # Start Scheduler in Background
+    from apscheduler.schedulers.background import BackgroundScheduler
+    from fastapi import FastAPI
+    import uvicorn
+
+    scheduler = BackgroundScheduler()
     scheduler.add_job(run_market_scan, 'interval', minutes=15, next_run_time=datetime.now())
-    print("APScheduler polling worker successfully started.")
+    print("APScheduler polling worker successfully started in background.")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):
         pass
+
+    # Dummy Web Server to satisfy Render Free Tier health checks
+    app = FastAPI(title="MarketSignalBot Worker Service")
+    @app.get("/health")
+    def health():
+        return {"status": "healthy", "service": "worker"}
+        
+    port = int(os.environ.get("PORT", 10000))
+    print(f"Starting web server on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     main()

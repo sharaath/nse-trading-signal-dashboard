@@ -70,14 +70,40 @@ def main():
     # Ensure database table existence
     init_db()
     
-    application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+    from fastapi import FastAPI
+    import uvicorn
     
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(CommandHandler("subscribe", subscribe))
-    application.add_handler(CommandHandler("unsubscribe", unsubscribe))
+    app = FastAPI(title="MarketSignalBot Telegram Listener Service")
     
-    print("Telegram Bot listener daemon successfully started.")
-    application.run_polling()
+    @app.get("/health")
+    def health():
+        return {"status": "healthy", "service": "bot"}
+        
+    @app.on_event("startup")
+    async def startup_event():
+        application = ApplicationBuilder().token(TELEGRAM_BOT_TOKEN).build()
+        application.add_handler(CommandHandler("start", start))
+        application.add_handler(CommandHandler("subscribe", subscribe))
+        application.add_handler(CommandHandler("unsubscribe", unsubscribe))
+        
+        await application.initialize()
+        await application.start()
+        await application.updater.start_polling()
+        print("Telegram Bot listener daemon successfully started in background.")
+        app.state.tg_app = application
+        
+    @app.on_event("shutdown")
+    async def shutdown_event():
+        application = getattr(app.state, "tg_app", None)
+        if application:
+            await application.updater.stop()
+            await application.stop()
+            await application.shutdown()
+            print("Telegram Bot stopped.")
+            
+    port = int(os.environ.get("PORT", 10000))
+    print(f"Starting web server on port {port}...")
+    uvicorn.run(app, host="0.0.0.0", port=port)
 
 if __name__ == "__main__":
     main()
