@@ -1,0 +1,5 @@
+# System database files
+*.db
+local_test.db
+market-signal-bot/local_test.db
+market-signal-bot/.env

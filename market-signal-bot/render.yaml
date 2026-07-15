@@ -1,0 +1,61 @@
+services:
+  # 1. FastAPI REST API Web Service
+  - type: web
+    name: market-signal-bot-api
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: market-signal-db
+          property: connectionString
+
+  # 2. Scanning Scheduler Worker
+  - type: worker
+    name: market-signal-bot-worker
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m worker.main
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: market-signal-db
+          property: connectionString
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+      - key: PERSONAL_USE_ONLY
+        value: "true"
+      - key: FORCE_SCAN
+        value: "true"
+
+  # 3. Telegram Command Bot Listener
+  - type: worker
+    name: market-signal-bot-bot
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python -m bot.main
+    envVars:
+      - key: DATABASE_URL
+        fromDatabase:
+          name: market-signal-db
+          property: connectionString
+      - key: TELEGRAM_BOT_TOKEN
+        sync: false
+
+  # 4. React static site
+  - type: web
+    name: market-signal-bot-frontend
+    env: static
+    buildCommand: cd frontend && npm install && npm run build
+    staticPublishPath: frontend/dist
+    envVars:
+      - key: VITE_API_URL
+        fromService:
+          name: market-signal-bot-api
+          type: web
+          property: url
+
+databases:
+  - name: market-signal-db
+    plan: free

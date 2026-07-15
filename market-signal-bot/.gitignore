@@ -1,0 +1,14 @@
+# Local environment secrets and databases
+.env
+*.db
+local_test.db
+
+# Python caches
+__pycache__/
+*.pyc
+
+# Node / React build artifacts
+node_modules/
+dist/
+.env.production
+.env.local

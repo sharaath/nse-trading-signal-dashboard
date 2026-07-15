@@ -1,0 +1,76 @@
+version: '3.8'
+
+services:
+  db:
+    image: postgres:15-alpine
+    container_name: msb-db
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: marketsignalbot
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d marketsignalbot"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build:
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: msb-api
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketsignalbot
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  worker:
+    build:
+      context: .
+      dockerfile: worker/Dockerfile
+    container_name: msb-worker
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketsignalbot
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - PERSONAL_USE_ONLY=true
+      - FORCE_SCAN=true  # Force scanning active outside trading hours for testing
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  bot:
+    build:
+      context: .
+      dockerfile: bot/Dockerfile
+    container_name: msb-bot
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketsignalbot
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: on-failure
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: msb-frontend
+    ports:
+      - "5173:5173"
+    depends_on:
+      - api
+    restart: on-failure
+
+volumes:
+  pgdata:
