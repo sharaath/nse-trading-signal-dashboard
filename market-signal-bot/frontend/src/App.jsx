@@ -2,7 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ShieldCheck, ToggleLeft, ToggleRight, Radio, RefreshCw, BarChart2, BellRing, Settings } from 'lucide-react';
 
-const API_BASE = "http://localhost:8000";
+let API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
+if (API_BASE && !API_BASE.startsWith("http")) {
+  API_BASE = `https://${API_BASE}`;
+}
 
 export default function App() {
   const [latestSignals, setLatestSignals] = useState([]);

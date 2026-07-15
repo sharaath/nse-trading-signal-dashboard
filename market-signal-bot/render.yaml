@@ -54,7 +54,7 @@ services:
         fromService:
           name: market-signal-bot-api
           type: web
-          property: url
+          property: host
 
 databases:
   - name: market-signal-db
