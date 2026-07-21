@@ -74,6 +74,54 @@ class NSEOptionChainProvider:
         logger.info(f"Using simulated option chain payload for {symbol} (NSE live API fallback).")
         return self._generate_fallback_option_chain(symbol)
 
+    def get_full_chain(self, symbol: str = "NIFTY") -> Dict[str, Any]:
+        """
+        Parses full option chain (all strikes) for NIFTY or BANKNIFTY with
+        CE/PE LTP, Chng%, OI, Volume, spot_price, and atm_strike.
+        """
+        raw_data = self.fetch_option_chain(symbol)
+        data_source = raw_data.get("data_source", "live")
+        records = raw_data.get("records", {})
+        spot_price = float(records.get("underlyingValue", 0.0) or 24200.0)
+
+        step = 50 if "NIFTY" in symbol.upper() and "BANK" not in symbol.upper() else 100
+        atm_strike = int(round(spot_price / step) * step)
+
+        rows = records.get("data", [])
+        formatted_chain = []
+
+        for row in rows:
+            strike = row.get("strikePrice")
+            if not strike:
+                continue
+
+            ce = row.get("CE", {}) or {}
+            pe = row.get("PE", {}) or {}
+
+            formatted_chain.append({
+                "strike": int(strike),
+                "ce_ltp": float(ce.get("lastPrice", 0.0) or 0.0),
+                "ce_chng_pct": float(ce.get("pChange", 0.0) or ce.get("change", 0.0) or 0.0),
+                "ce_oi": int(ce.get("openInterest", 0) or 0),
+                "ce_volume": int(ce.get("totalTradedVolume", 0) or 0),
+                "pe_ltp": float(pe.get("lastPrice", 0.0) or 0.0),
+                "pe_chng_pct": float(pe.get("pChange", 0.0) or pe.get("change", 0.0) or 0.0),
+                "pe_oi": int(pe.get("openInterest", 0) or 0),
+                "pe_volume": int(pe.get("totalTradedVolume", 0) or 0),
+                "data_source": data_source
+            })
+
+        # Sort strikes ascending
+        formatted_chain.sort(key=lambda x: x["strike"])
+
+        return {
+            "symbol": symbol.upper(),
+            "spot_price": spot_price,
+            "atm_strike": atm_strike,
+            "data_source": data_source,
+            "chain": formatted_chain
+        }
+
     def _generate_fallback_option_chain(self, symbol: str) -> Dict[str, Any]:
         """Generates realistic evolving option chain snapshots for testing and offline fallback."""
         spot_price = 24200.0 if symbol == "NIFTY" else 52000.0

@@ -17,7 +17,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "broad",
         "weighting_method": "market-cap",
         "is_tradable_spot": False,
-        "derivative_etf": "NIFTY Options / Futures / NIFTYBEES ETF"
+        "derivative_etf": "NIFTY Options / Futures / NIFTYBEES ETF",
+        "lot_size": 75
     },
     "^BSESN": {
         "symbol": "^BSESN",
@@ -29,7 +30,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "broad",
         "weighting_method": "market-cap",
         "is_tradable_spot": False,
-        "derivative_etf": "SENSEX Options / Futures / SENSEXBEES ETF"
+        "derivative_etf": "SENSEX Options / Futures / SENSEXBEES ETF",
+        "lot_size": 10
     },
     "^NSEBANK": {
         "symbol": "^NSEBANK",
@@ -41,7 +43,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "sectoral",
         "weighting_method": "market-cap",
         "is_tradable_spot": False,
-        "derivative_etf": "BANKNIFTY Options / Futures / BANKBEES ETF"
+        "derivative_etf": "BANKNIFTY Options / Futures / BANKBEES ETF",
+        "lot_size": 15
     },
     "^CNXIT": {
         "symbol": "^CNXIT",
@@ -53,7 +56,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "sectoral",
         "weighting_method": "market-cap",
         "is_tradable_spot": False,
-        "derivative_etf": "NIFTY IT Options / Futures / ITBEES ETF"
+        "derivative_etf": "NIFTY IT Options / Futures / ITBEES ETF",
+        "lot_size": 25
     },
     "^GSPC": {
         "symbol": "^GSPC",
@@ -65,7 +69,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "broad",
         "weighting_method": "market-cap",
         "is_tradable_spot": False,
-        "derivative_etf": "S&P 500 E-mini Futures / SPY ETF / VOO"
+        "derivative_etf": "S&P 500 E-mini Futures / SPY ETF / VOO",
+        "lot_size": 50
     },
     "^DJI": {
         "symbol": "^DJI",
@@ -77,7 +82,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "broad",
         "weighting_method": "price-weighted",
         "is_tradable_spot": False,
-        "derivative_etf": "Dow Futures / DIA ETF"
+        "derivative_etf": "Dow Futures / DIA ETF",
+        "lot_size": 10
     },
     "^NDX": {
         "symbol": "^NDX",
@@ -89,7 +95,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "broad",
         "weighting_method": "market-cap",
         "is_tradable_spot": False,
-        "derivative_etf": "Nasdaq 100 E-mini Futures / QQQ ETF / MON100 ETF"
+        "derivative_etf": "Nasdaq 100 E-mini Futures / QQQ ETF / MON100 ETF",
+        "lot_size": 20
     },
 
     # --- STOCKS ---
@@ -103,7 +110,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "equity",
         "weighting_method": "N/A",
         "is_tradable_spot": True,
-        "derivative_etf": "Spot Shares / Equity Derivatives"
+        "derivative_etf": "Spot Shares / Equity Derivatives",
+        "lot_size": 250
     },
     "TCS.NS": {
         "symbol": "TCS.NS",
@@ -115,7 +123,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "equity",
         "weighting_method": "N/A",
         "is_tradable_spot": True,
-        "derivative_etf": "Spot Shares / Equity Derivatives"
+        "derivative_etf": "Spot Shares / Equity Derivatives",
+        "lot_size": 175
     },
     "HDFCBANK.NS": {
         "symbol": "HDFCBANK.NS",
@@ -127,7 +136,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "equity",
         "weighting_method": "N/A",
         "is_tradable_spot": True,
-        "derivative_etf": "Spot Shares / Equity Derivatives"
+        "derivative_etf": "Spot Shares / Equity Derivatives",
+        "lot_size": 550
     },
     "INFY.NS": {
         "symbol": "INFY.NS",
@@ -139,7 +149,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "equity",
         "weighting_method": "N/A",
         "is_tradable_spot": True,
-        "derivative_etf": "Spot Shares / Equity Derivatives"
+        "derivative_etf": "Spot Shares / Equity Derivatives",
+        "lot_size": 400
     },
     "ADANIENT.NS": {
         "symbol": "ADANIENT.NS",
@@ -151,7 +162,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "equity",
         "weighting_method": "N/A",
         "is_tradable_spot": True,
-        "derivative_etf": "Spot Shares / Equity Derivatives"
+        "derivative_etf": "Spot Shares / Equity Derivatives",
+        "lot_size": 300
     },
     "COALINDIA.NS": {
         "symbol": "COALINDIA.NS",
@@ -163,7 +175,8 @@ INSTRUMENTS_REGISTRY: Dict[str, Dict[str, Any]] = {
         "category": "equity",
         "weighting_method": "N/A",
         "is_tradable_spot": True,
-        "derivative_etf": "Spot Shares / Equity Derivatives"
+        "derivative_etf": "Spot Shares / Equity Derivatives",
+        "lot_size": 2100
     }
 }
 

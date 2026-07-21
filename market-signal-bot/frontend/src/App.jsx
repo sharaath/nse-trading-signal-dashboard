@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
 import { ShieldCheck, ToggleLeft, ToggleRight, Radio, RefreshCw, BarChart2, BellRing, Settings, Zap } from 'lucide-react';
+import OptionChainTable from './OptionChainTable';
 
 let API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 if (API_BASE && !API_BASE.startsWith("http")) {
@@ -253,6 +254,9 @@ export default function App() {
                   </div>
                 )}
               </div>
+
+              {/* Live Option Chain Matrix Table & Profit Calculator */}
+              <OptionChainTable />
 
               {/* Fast Option Momentum Alerts Panel */}
               <div className="bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-xl">
