@@ -72,11 +72,12 @@ def run_option_momentum_scan():
                     oi_change=alert["oi_change"],
                     volume=alert["volume"],
                     spot_price=alert["spot_price"],
+                    data_source=alert.get("data_source", "live"),
                 )
                 db.add(history_entry)
                 db.commit()
 
-                logger.info(f"⚡ FAST OPTION MOVE: {alert['contract']} | Premium: ₹{alert['old_premium']:.2f} -> ₹{alert['new_premium']:.2f} (+{alert['pct_change']}%)")
+                logger.info(f"FAST OPTION MOVE ({alert.get('data_source')}): {alert['contract']} | Premium: ₹{alert['old_premium']:.2f} -> ₹{alert['new_premium']:.2f} (+{alert['pct_change']}%)")
 
                 # Dispatch Telegram alert
                 if chat_id:
@@ -84,8 +85,11 @@ def run_option_momentum_scan():
                     sym_clean = "NIFTY 50" if alert["symbol"] == "NIFTY" else "BANKNIFTY"
                     opt_emoji = "🟢 CE (Bullish Surge)" if alert["option_type"] == "CE" else "🔴 PE (Bearish Surge)"
 
+                    is_simulated = alert.get("data_source") == "simulated"
+                    header = "⚠️ *SIMULATED DATA — NOT A REAL SIGNAL*" if is_simulated else "⚡ *FAST OPTION MOVE DETECTED*"
+
                     msg = (
-                        f"⚡ *FAST OPTION MOVE DETECTED*\n\n"
+                        f"{header}\n\n"
                         f"*Index:* `{sym_clean}`\n"
                         f"*Contract:* `{alert['contract']}` ({opt_emoji})\n\n"
                         f"🚀 *Premium Jump:* ₹{alert['old_premium']:,.2f} → ₹{alert['new_premium']:,.2f} (+{alert['pct_change']:.1f}%)\n"

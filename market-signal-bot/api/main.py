@@ -170,6 +170,7 @@ class OptionMomentumResponse(BaseModel):
     oi_change: int
     volume: int
     spot_price: float
+    data_source: str = "live"
     timestamp: datetime
 
     class Config:

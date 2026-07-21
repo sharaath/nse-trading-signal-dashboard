@@ -49,6 +49,8 @@ class OptionMomentumDetector:
 
         prev_snapshot = self.previous_snapshots.get(symbol, {})
 
+        data_source = option_chain.get("data_source", "live")
+
         for row in data_rows:
             strike = row.get("strikePrice")
             if not strike or strike < min_strike or strike > max_strike:
@@ -99,6 +101,7 @@ class OptionMomentumDetector:
                                 "oi_change": oi_change,
                                 "volume": volume,
                                 "spot_price": spot_price,
+                                "data_source": data_source,
                                 "timestamp": datetime.now(timezone.utc).isoformat()
                             }
                             detected_alerts.append(alert)

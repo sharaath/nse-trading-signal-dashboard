@@ -56,6 +56,28 @@ def test_detect_momentum_positive():
     assert alert["new_premium"] == 115.0
     assert alert["pct_change"] == 15.0
     assert alert["oi_change"] == 8000
+    assert alert["data_source"] == "live"
+
+def test_detect_momentum_simulated_tag():
+    detector = OptionMomentumDetector(min_pct_change=8.0, strikes_around_atm=3)
+    snapshot1 = {
+        "data_source": "simulated",
+        "records": {
+            "underlyingValue": 24200.0,
+            "data": [{"strikePrice": 24200, "CE": {"strikePrice": 24200, "underlying": 24200.0, "lastPrice": 100.0, "changeinOpenInterest": 5000, "totalTradedVolume": 10000}}]
+        }
+    }
+    snapshot2 = {
+        "data_source": "simulated",
+        "records": {
+            "underlyingValue": 24200.0,
+            "data": [{"strikePrice": 24200, "CE": {"strikePrice": 24200, "underlying": 24200.0, "lastPrice": 115.0, "changeinOpenInterest": 8000, "totalTradedVolume": 25000}}]
+        }
+    }
+    detector.detect_momentum(snapshot1, symbol="NIFTY")
+    alerts = detector.detect_momentum(snapshot2, symbol="NIFTY")
+    assert len(alerts) == 1
+    assert alerts[0]["data_source"] == "simulated"
 
 def test_detect_momentum_ignore_negative_oi_noise():
     detector = OptionMomentumDetector(min_pct_change=8.0, strikes_around_atm=3)

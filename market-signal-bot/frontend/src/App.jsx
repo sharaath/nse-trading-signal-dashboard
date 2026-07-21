@@ -271,27 +271,37 @@ export default function App() {
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {optionMomentum.length > 0 ? (
-                    optionMomentum.map(item => (
-                      <div key={item.id} className="p-4 rounded-xl bg-slate-900/60 border border-[#1e293b] hover:border-amber-500/40 transition-colors">
-                        <div className="flex justify-between items-center mb-2">
-                          <span className="font-bold text-sm text-white tracking-wide">{item.contract}</span>
-                          <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.option_type === 'CE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
-                            {item.option_type === 'CE' ? '🟢 CALL SURGE' : '🔴 PUT SURGE'}
-                          </span>
+                    optionMomentum.map(item => {
+                      const isSimulated = item.data_source === "simulated";
+                      return (
+                        <div key={item.id} className={`p-4 rounded-xl transition-colors ${isSimulated ? 'bg-slate-900/30 border border-amber-500/30 opacity-80' : 'bg-slate-900/60 border border-[#1e293b] hover:border-amber-500/40'}`}>
+                          <div className="flex justify-between items-center mb-2">
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-sm text-white tracking-wide">{item.contract}</span>
+                              {isSimulated ? (
+                                <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-amber-500/20 text-amber-300 border border-amber-500/40">SIMULATED</span>
+                              ) : (
+                                <span className="px-2 py-0.5 rounded text-[9px] font-black uppercase bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">LIVE NSE</span>
+                              )}
+                            </div>
+                            <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.option_type === 'CE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                              {item.option_type === 'CE' ? '🟢 CALL SURGE' : '🔴 PUT SURGE'}
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-baseline mb-2">
+                            <span className="text-xs text-slate-400">Premium Jump:</span>
+                            <span className="text-base font-extrabold text-amber-400">
+                              Rs.{item.old_premium.toFixed(2)} → Rs.{item.new_premium.toFixed(2)} <span className="text-xs text-emerald-400 font-bold">(+{item.pct_change.toFixed(1)}%)</span>
+                            </span>
+                          </div>
+                          <div className="flex justify-between items-center text-xs text-slate-400 border-t border-slate-800/80 pt-2">
+                            <span>OI Surge: <strong className="text-slate-200">+{item.oi_change.toLocaleString()}</strong></span>
+                            <span>Vol: <strong className="text-slate-200">{item.volume.toLocaleString()}</strong></span>
+                            <span>{new Date(item.timestamp).toLocaleTimeString()}</span>
+                          </div>
                         </div>
-                        <div className="flex justify-between items-baseline mb-2">
-                          <span className="text-xs text-slate-400">Premium Jump:</span>
-                          <span className="text-base font-extrabold text-amber-400">
-                            Rs.{item.old_premium.toFixed(2)} → Rs.{item.new_premium.toFixed(2)} <span className="text-xs text-emerald-400 font-bold">(+{item.pct_change.toFixed(1)}%)</span>
-                          </span>
-                        </div>
-                        <div className="flex justify-between items-center text-xs text-slate-400 border-t border-slate-800/80 pt-2">
-                          <span>OI Surge: <strong className="text-slate-200">+{item.oi_change.toLocaleString()}</strong></span>
-                          <span>Vol: <strong className="text-slate-200">{item.volume.toLocaleString()}</strong></span>
-                          <span>{new Date(item.timestamp).toLocaleTimeString()}</span>
-                        </div>
-                      </div>
-                    ))
+                      );
+                    })
                   ) : (
                     <div className="col-span-2 text-center text-slate-500 py-6 text-sm">
                       No fast option surges detected in the recent scan interval.

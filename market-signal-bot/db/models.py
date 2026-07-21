@@ -45,6 +45,7 @@ class OptionMomentumHistory(Base):
     oi_change = Column(Integer)
     volume = Column(Integer)
     spot_price = Column(Float)
+    data_source = Column(String, default="live")
     timestamp = Column(DateTime, default=datetime.utcnow)
 
 # Create tables in startup if migrations are not run

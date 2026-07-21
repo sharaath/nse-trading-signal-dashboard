@@ -60,6 +60,7 @@ class NSEOptionChainProvider:
                 if response.status_code == 200:
                     data = response.json()
                     if "filtered" in data or "records" in data:
+                        data["data_source"] = "live"
                         return data
                 elif response.status_code in [401, 403, 429]:
                     logger.warning(f"NSE API returned {response.status_code}. Re-initializing session (Attempt {attempt+1}/{retries})...")
@@ -113,6 +114,7 @@ class NSEOptionChainProvider:
             })
 
         return {
+            "data_source": "simulated",
             "records": {
                 "underlyingValue": spot_price,
                 "data": records_data
