@@ -426,30 +426,34 @@ def main():
                         target_price2 = price * (1 + t2_pct)
                         stop_loss = price * (1 - sl_pct)
                         
-                        spot_profit1 = abs(target_price1 - price)
-                        spot_profit2 = abs(target_price2 - price)
-                        
                         est_prem = max(10.0, price * 0.012)
                         opt_target = est_prem * 1.30
                         opt_sl = est_prem * 0.85
-                        opt_profit = opt_target - est_prem
+                        
+                        sig_time_str = ist_now.strftime("%H:%M:%S IST")
+                        start_win_str = ist_now.strftime("%I:%M %p IST")
+                        end_win_str = (ist_now + timedelta(minutes=5)).strftime("%I:%M %p IST")
+                        conf = calculate_confidence(signal_row, "BUY")
                         
                         msg = (
-                            f"🟢 *SWING BUY SIGNAL TRIGGERED*\n\n"
-                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
-                            f"*Action:* BUY (Market Open / Live)\n"
-                            f"*Spot Entry Price:* ₹{price:.2f}\n\n"
-                            f"🎯 *Spot Target 1 ({t1_pct*100:.1f}%):* ₹{target_price1:.2f} (Profit: +₹{spot_profit1:.2f}/share)\n"
-                            f"🎯 *Spot Target 2 ({t2_pct*100:.1f}%):* ₹{target_price2:.2f} (Profit: +₹{spot_profit2:.2f}/share)\n"
-                            f"🛑 *Spot Stop Loss (-{sl_pct*100:.1f}%):* ₹{stop_loss:.2f}\n\n"
-                            f"📊 *RECOMMENDED OPTION TRADE (CE)*\n"
-                            f"*Contract:* `{sym_clean} {atm_strike} CE`\n"
-                            f"*Est. Premium Entry:* ₹{est_prem:.2f}\n"
-                            f"*Option Target (+30%):* ₹{opt_target:.2f}\n"
-                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n"
-                            f"💰 *Total Est. Option Profit:* +₹{opt_profit:.2f} / contract (+30.0%)\n\n"
-                            f"*Date:* {date.today()}\n"
-                            f"_Rationale: RSI momentum rising & MACD bullish crossover confirmation._"
+                            f"🟢 *BUY SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* {stock_name} (`{sym_clean}`)\n\n"
+                            f"*Signal Time:* {sig_time_str}\n\n"
+                            f"⏰ *ENTRY WINDOW*\n"
+                            f"Enter Between: {start_win_str} – {end_win_str}\n"
+                            f"Trade Valid Until: {end_win_str}\n\n"
+                            f"*Spot Entry:* ₹{price:,.2f}\n\n"
+                            f"🎯 *Target 1:* ₹{target_price1:,.2f} (+{t1_pct*100:.1f}%)\n"
+                            f"🎯 *Target 2:* ₹{target_price2:,.2f} (+{t2_pct*100:.1f}%)\n\n"
+                            f"🛑 *Stop Loss:* ₹{stop_loss:,.2f} (-{sl_pct*100:.1f}%)\n\n"
+                            f"📊 *OPTION TRADE*\n"
+                            f"Contract: `{sym_clean} {atm_strike} CE`\n"
+                            f"Premium Entry: ₹{est_prem:,.2f}\n\n"
+                            f"🎯 *Option Target:* ₹{opt_target:,.2f} (+30%)\n"
+                            f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n\n"
+                            f"📈 *Confidence:* {conf:.0f}%\n"
+                            f"Timeframe: Daily Swing\n"
+                            f"Strategy: EMA20 + MACD + RSI"
                         )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent BUY alert for {ticker}")
@@ -467,20 +471,24 @@ def main():
                             diff = price - entry_p
                             pct = (diff / entry_p) * 100 if entry_p > 0 else 0
                             if diff >= 0:
-                                pnl_str = f"💰 *Total Realized Profit:* +₹{diff:.2f} per share (+{pct:.2f}%)\n\n"
+                                pnl_str = f"💰 *Total Realized Profit:* +₹{diff:,.2f} (+{pct:.2f}%)\n\n"
                             else:
-                                pnl_str = f"📉 *Total Realized P&L:* -₹{abs(diff):.2f} per share ({pct:.2f}%)\n\n"
+                                pnl_str = f"📉 *Total Realized P&L:* -₹{abs(diff):,.2f} ({pct:.2f}%)\n\n"
 
+                        sig_time_str = ist_now.strftime("%H:%M:%S IST")
+                        conf = calculate_confidence(signal_row, "SELL")
+                        
                         msg = (
-                            f"🔴 *SWING SELL SIGNAL TRIGGERED*\n\n"
-                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
-                            f"*Action:* SELL / Exit Long\n"
-                            f"*Exit Spot Price:* ₹{price:.2f}\n\n"
+                            f"🔴 *SELL SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* {stock_name} (`{sym_clean}`)\n\n"
+                            f"*Signal Time:* {sig_time_str}\n\n"
+                            f"*Spot Exit:* ₹{price:,.2f}\n\n"
                             f"{pnl_str}"
-                            f"📊 *RECOMMENDED OPTION TRADE (PE)*\n"
-                            f"*Contract:* `{sym_clean} {atm_strike} PE`\n\n"
-                            f"*Date:* {date.today()}\n"
-                            f"_Rationale: MACD bearish crossover with declining momentum._"
+                            f"📊 *OPTION TRADE*\n"
+                            f"Contract: `{sym_clean} {atm_strike} PE`\n\n"
+                            f"📈 *Confidence:* {conf:.0f}%\n"
+                            f"Timeframe: Daily Swing\n"
+                            f"Strategy: MACD + RSI Crossover"
                         )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent SELL alert for {ticker}")
@@ -584,37 +592,48 @@ def main():
                     
                     if today_intraday_signal == "BUY":
                         t1_pct = 0.0075 if is_idx else 0.010
+                        t2_pct = 0.0150 if is_idx else 0.020
                         sl_pct = 0.0040 if is_idx else 0.005
                         
-                        target_price = price_15m * (1 + t1_pct)
+                        target_price1 = price_15m * (1 + t1_pct)
+                        target_price2 = price_15m * (1 + t2_pct)
                         stop_loss = price_15m * (1 - sl_pct)
-                        spot_profit = abs(target_price - price_15m)
                         
                         est_prem = max(10.0, price_15m * 0.008)
                         opt_target = est_prem * 1.25
                         opt_sl = est_prem * 0.85
-                        opt_profit = opt_target - est_prem
+                        
+                        sig_time_str = ist_now.strftime("%H:%M:%S IST")
+                        start_win_str = ist_now.strftime("%I:%M %p IST")
+                        end_win_str = (ist_now + timedelta(minutes=5)).strftime("%I:%M %p IST")
+                        conf = calculate_confidence(signal_row_15m, "BUY")
                         
                         msg = (
-                            f"⚡ *INTRADAY BUY SIGNAL TRIGGERED*\n\n"
-                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
-                            f"*Spot Entry Price:* ₹{price_15m:.2f}\n"
-                            f"🎯 *Spot Target (+{t1_pct*100:.2f}%):* ₹{target_price:.2f} (Profit: +₹{spot_profit:.2f}/share)\n"
-                            f"🛑 *Spot Stop Loss (-{sl_pct*100:.2f}%):* ₹{stop_loss:.2f}\n\n"
-                            f"📊 *RECOMMENDED OPTION TRADE (CE)*\n"
-                            f"*Contract:* `{sym_clean} {atm_strike} CE`\n"
-                            f"*Est. Premium Entry:* ₹{est_prem:.2f}\n"
-                            f"*Option Target (+25%):* ₹{opt_target:.2f}\n"
-                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n"
-                            f"💰 *Total Est. Option Profit:* +₹{opt_profit:.2f} / contract (+25.0%)\n\n"
-                            f"_Rationale: Intraday 15m breakout above EMA20 with MACD momentum._"
+                            f"🟢 *BUY SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* {stock_name} (`{sym_clean}`)\n\n"
+                            f"*Signal Time:* {sig_time_str}\n\n"
+                            f"⏰ *ENTRY WINDOW*\n"
+                            f"Enter Between: {start_win_str} – {end_win_str}\n"
+                            f"Trade Valid Until: {end_win_str}\n\n"
+                            f"*Spot Entry:* ₹{price_15m:,.2f}\n\n"
+                            f"🎯 *Target 1:* ₹{target_price1:,.2f} (+{t1_pct*100:.1f}%)\n"
+                            f"🎯 *Target 2:* ₹{target_price2:,.2f} (+{t2_pct*100:.1f}%)\n\n"
+                            f"🛑 *Stop Loss:* ₹{stop_loss:,.2f} (-{sl_pct*100:.1f}%)\n\n"
+                            f"📊 *OPTION TRADE*\n"
+                            f"Contract: `{sym_clean} {atm_strike} CE`\n"
+                            f"Premium Entry: ₹{est_prem:,.2f}\n\n"
+                            f"🎯 *Option Target:* ₹{opt_target:,.2f} (+25%)\n"
+                            f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n\n"
+                            f"📈 *Confidence:* {conf:.0f}%\n"
+                            f"Timeframe: 15 Minutes\n"
+                            f"Strategy: EMA20 + MACD + RSI"
                         )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent Intraday BUY alert for {ticker}")
                         
                         active_intraday_trades[ticker_clean] = {
                             "entry_price": price_15m,
-                            "target_price": target_price,
+                            "target_price": target_price1,
                             "stop_loss": stop_loss,
                             "time": str(ist_now)
                         }
@@ -625,18 +644,24 @@ def main():
                             diff = price_15m - entry_p
                             pct = (diff / entry_p) * 100 if entry_p > 0 else 0
                             if diff >= 0:
-                                pnl_str = f"💰 *Total Realized Profit:* +₹{diff:.2f} per share (+{pct:.2f}%)\n\n"
+                                pnl_str = f"💰 *Total Realized Profit:* +₹{diff:,.2f} (+{pct:.2f}%)\n\n"
                             else:
-                                pnl_str = f"📉 *Total Realized P&L:* -₹{abs(diff):.2f} per share ({pct:.2f}%)\n\n"
+                                pnl_str = f"📉 *Total Realized P&L:* -₹{abs(diff):,.2f} ({pct:.2f}%)\n\n"
 
+                        sig_time_str = ist_now.strftime("%H:%M:%S IST")
+                        conf = calculate_confidence(signal_row_15m, "SELL")
+                        
                         msg = (
-                            f"⚡ *INTRADAY SELL SIGNAL*\n\n"
-                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
-                            f"*Exit Spot Price:* ₹{price_15m:.2f}\n\n"
+                            f"🔴 *SELL SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* {stock_name} (`{sym_clean}`)\n\n"
+                            f"*Signal Time:* {sig_time_str}\n\n"
+                            f"*Spot Exit:* ₹{price_15m:,.2f}\n\n"
                             f"{pnl_str}"
-                            f"📊 *RECOMMENDED OPTION TRADE (PE)*\n"
-                            f"*Contract:* `{sym_clean} {atm_strike} PE`\n\n"
-                            f"_Rationale: Price fell below EMA20 with bearish MACD crossover._"
+                            f"📊 *OPTION TRADE*\n"
+                            f"Contract: `{sym_clean} {atm_strike} PE`\n\n"
+                            f"📈 *Confidence:* {conf:.0f}%\n"
+                            f"Timeframe: 15 Minutes\n"
+                            f"Strategy: EMA20 + MACD + RSI"
                         )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent Intraday SELL alert for {ticker}")

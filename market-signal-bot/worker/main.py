@@ -99,42 +99,62 @@ def run_market_scan():
         
         # If transition occurs and is BUY/SELL, send alerts
         if sig in ["BUY", "SELL"] and sig != prev_sig:
-            # Build message
             emoji = "🟢 BUY" if sig == "BUY" else "🔴 SELL"
-            disclaimer = "\n\n_Disclaimer: Algorithmic technical signal. Not SEBI registered investment advice._"
-            
             t1 = analysis.get('target1', close_price * 1.025)
             t2 = analysis.get('target2', close_price * 1.050)
             sl = analysis.get('stop_loss', close_price * 0.985)
-            spot_profit_t1 = abs(t1 - close_price)
-            spot_profit_t2 = abs(t2 - close_price)
+            
+            t1_pct = ((t1 - close_price) / close_price) * 100 if sig == "BUY" else ((close_price - t1) / close_price) * 100
+            t2_pct = ((t2 - close_price) / close_price) * 100 if sig == "BUY" else ((close_price - t2) / close_price) * 100
+            sl_pct = ((close_price - sl) / close_price) * 100 if sig == "BUY" else ((sl - close_price) / close_price) * 100
             
             opt_contract = analysis.get('option_contract', 'N/A')
             opt_entry = analysis.get('option_entry', 0.0)
             opt_target = analysis.get('option_target', 0.0)
             opt_sl = analysis.get('option_sl', 0.0)
-            opt_profit = max(0.0, opt_target - opt_entry)
             
-            opt_profit_str = f"\n💰 *Total Est. Option Profit:* +₹{opt_profit:.2f} / contract (+30.0%)" if opt_entry > 0 else ""
+            sig_time_str = ist_now.strftime("%H:%M:%S IST")
+            start_win_str = ist_now.strftime("%I:%M %p IST")
+            end_win_str = (ist_now + timedelta(minutes=5)).strftime("%I:%M %p IST")
             
-            msg = (
-                f"{emoji} *SIGNAL TRIGGERED*\n\n"
-                f"*Instrument:* `{symbol}`\n"
-                f"*Spot Entry Price:* ₹{close_price:.2f}\n"
-                f"🎯 *Target 1:* ₹{t1:.2f} (Profit: +₹{spot_profit_t1:.2f}/share)\n"
-                f"🎯 *Target 2:* ₹{t2:.2f} (Profit: +₹{spot_profit_t2:.2f}/share)\n"
-                f"🛑 *Stop Loss:* ₹{sl:.2f}\n\n"
-                f"📊 *OPTION TRADE RECOMMENDATION*\n"
-                f"*Contract:* `{opt_contract}`\n"
-                f"*Est. Premium Entry:* ₹{opt_entry:.2f}\n"
-                f"*Option Target (+30%):* ₹{opt_target:.2f}\n"
-                f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}"
-                f"{opt_profit_str}\n\n"
-                f"*Confidence Score:* {analysis['confidence']:.1f}%\n"
-                f"*Reason:* {analysis['reason']}\n"
-                f"*Time:* {ist_now.strftime('%Y-%m-%d %H:%M:%S IST')}"
-                f"{disclaimer}"
-            )
+            sym_clean = symbol.replace("^", "").replace(".NS", "")
+            
+            if sig == "BUY":
+                msg = (
+                    f"🟢 *BUY SIGNAL TRIGGERED*\n\n"
+                    f"*Instrument:* `{sym_clean}`\n\n"
+                    f"*Signal Time:* {sig_time_str}\n\n"
+                    f"⏰ *ENTRY WINDOW*\n"
+                    f"Enter Between: {start_win_str} – {end_win_str}\n"
+                    f"Trade Valid Until: {end_win_str}\n\n"
+                    f"*Spot Entry:* ₹{close_price:,.2f}\n\n"
+                    f"🎯 *Target 1:* ₹{t1:,.2f} (+{abs(t1_pct):.1f}%)\n"
+                    f"🎯 *Target 2:* ₹{t2:,.2f} (+{abs(t2_pct):.1f}%)\n\n"
+                    f"🛑 *Stop Loss:* ₹{sl:,.2f} (-{abs(sl_pct):.1f}%)\n\n"
+                    f"📊 *OPTION TRADE*\n"
+                    f"Contract: `{opt_contract}`\n"
+                    f"Premium Entry: ₹{opt_entry:,.2f}\n\n"
+                    f"🎯 *Option Target:* ₹{opt_target:,.2f} (+30%)\n"
+                    f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n\n"
+                    f"📈 *Confidence:* {analysis['confidence']:.0f}%\n"
+                    f"Timeframe: 15 Minutes\n"
+                    f"Strategy: EMA20 + MACD + RSI"
+                )
+            else:
+                msg = (
+                    f"🔴 *SELL SIGNAL TRIGGERED*\n\n"
+                    f"*Instrument:* `{sym_clean}`\n\n"
+                    f"*Signal Time:* {sig_time_str}\n\n"
+                    f"*Spot Exit:* ₹{close_price:,.2f}\n\n"
+                    f"📊 *OPTION TRADE*\n"
+                    f"Contract: `{opt_contract}`\n"
+                    f"Premium Entry: ₹{opt_entry:,.2f}\n\n"
+                    f"🎯 *Option Target:* ₹{opt_target:,.2f} (+30%)\n"
+                    f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n\n"
+                    f"📈 *Confidence:* {analysis['confidence']:.0f}%\n"
+                    f"Timeframe: 15 Minutes\n"
+                    f"Strategy: EMA20 + MACD + RSI"
+                )
             
             # Send to all active subscribers
             subs = db.query(UserSubscription).filter(UserSubscription.is_active == True).all()
