@@ -158,6 +158,23 @@ class SignalResponse(BaseModel):
     class Config:
         from_attributes = True
 
+class OptionMomentumResponse(BaseModel):
+    id: int
+    symbol: str
+    strike: int
+    option_type: str
+    contract: str
+    old_premium: float
+    new_premium: float
+    pct_change: float
+    oi_change: int
+    volume: int
+    spot_price: float
+    timestamp: datetime
+
+    class Config:
+        from_attributes = True
+
 # --- API ENDPOINTS ---
 
 @app.get("/health")
@@ -172,6 +189,25 @@ def health_check():
 def get_instruments():
     """Returns all available instruments categorized into Indices vs Stocks with full metadata."""
     return get_grouped_instruments()
+
+@app.get("/options/momentum", response_model=List[OptionMomentumResponse])
+def get_option_momentum_alerts(
+    symbol: Optional[str] = None,
+    limit: int = Query(20, ge=1, le=100),
+    db: Session = Depends(get_db)
+):
+    """Returns the latest fast-moving option momentum alerts detected by short-interval scanner."""
+    query = db.query(OptionMomentumHistory)
+    if symbol:
+        sym_clean = symbol.upper().replace("^", "")
+        if sym_clean == "NSEI":
+            sym_clean = "NIFTY"
+        elif sym_clean == "NSEBANK":
+            sym_clean = "BANKNIFTY"
+        query = query.filter(OptionMomentumHistory.symbol == sym_clean)
+        
+    records = query.order_by(desc(OptionMomentumHistory.timestamp)).limit(limit).all()
+    return records
 
 @app.get("/signals/latest", response_model=List[SignalResponse])
 def get_latest_signals(db: Session = Depends(get_db)):

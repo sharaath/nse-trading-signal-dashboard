@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
-import { ShieldCheck, ToggleLeft, ToggleRight, Radio, RefreshCw, BarChart2, BellRing, Settings } from 'lucide-react';
+import { ShieldCheck, ToggleLeft, ToggleRight, Radio, RefreshCw, BarChart2, BellRing, Settings, Zap } from 'lucide-react';
 
 let API_BASE = import.meta.env.VITE_API_URL || "http://localhost:8000";
 if (API_BASE && !API_BASE.startsWith("http")) {
@@ -9,6 +9,7 @@ if (API_BASE && !API_BASE.startsWith("http")) {
 
 export default function App() {
   const [latestSignals, setLatestSignals] = useState([]);
+  const [optionMomentum, setOptionMomentum] = useState([]);
   const [selectedTicker, setSelectedTicker] = useState("^NSEI");
   const [history, setHistory] = useState([]);
   const [strategies, setStrategies] = useState({
@@ -30,6 +31,18 @@ export default function App() {
       }
     } catch (e) {
       console.error("Error fetching latest signals", e);
+    }
+  };
+
+  const fetchOptionMomentum = async () => {
+    try {
+      const res = await fetch(`${API_BASE}/options/momentum?limit=10`);
+      if (res.ok) {
+        const data = await res.json();
+        setOptionMomentum(data);
+      }
+    } catch (e) {
+      console.error("Error fetching option momentum alerts", e);
     }
   };
 
@@ -78,9 +91,11 @@ export default function App() {
   useEffect(() => {
     checkHealth();
     fetchLatest();
+    fetchOptionMomentum();
     fetchHistory(selectedTicker);
     const interval = setInterval(() => {
       fetchLatest();
+      fetchOptionMomentum();
       checkHealth();
     }, 30000);
     return () => clearInterval(interval);
@@ -190,7 +205,7 @@ export default function App() {
               </div>
             </div>
 
-            {/* Right Chart Analysis */}
+            {/* Right Chart Analysis & Option Momentum Feed */}
             <div className="lg:col-span-2 space-y-8">
               <div className="bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-xl">
                 <div className="flex justify-between items-center mb-4 border-b border-[#1e293b] pb-4">
@@ -237,6 +252,52 @@ export default function App() {
                     No historical coordinates available. Check scheduler status.
                   </div>
                 )}
+              </div>
+
+              {/* Fast Option Momentum Alerts Panel */}
+              <div className="bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-xl">
+                <div className="flex justify-between items-center mb-4 border-b border-[#1e293b] pb-4">
+                  <div className="flex items-center space-x-2">
+                    <Zap className="w-5 h-5 text-amber-400 animate-bounce" />
+                    <div>
+                      <h3 className="text-lg font-bold text-white">Live Fast Option Momentum</h3>
+                      <p className="text-xs text-slate-400">Short-interval premium surges confirmed by positive OI buildup</p>
+                    </div>
+                  </div>
+                  <button onClick={fetchOptionMomentum} className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors">
+                    <RefreshCw className="w-4 h-4 text-slate-300" />
+                  </button>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  {optionMomentum.length > 0 ? (
+                    optionMomentum.map(item => (
+                      <div key={item.id} className="p-4 rounded-xl bg-slate-900/60 border border-[#1e293b] hover:border-amber-500/40 transition-colors">
+                        <div className="flex justify-between items-center mb-2">
+                          <span className="font-bold text-sm text-white tracking-wide">{item.contract}</span>
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-black uppercase ${item.option_type === 'CE' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : 'bg-rose-500/10 text-rose-400 border border-rose-500/20'}`}>
+                            {item.option_type === 'CE' ? '🟢 CALL SURGE' : '🔴 PUT SURGE'}
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-baseline mb-2">
+                          <span className="text-xs text-slate-400">Premium Jump:</span>
+                          <span className="text-base font-extrabold text-amber-400">
+                            Rs.{item.old_premium.toFixed(2)} → Rs.{item.new_premium.toFixed(2)} <span className="text-xs text-emerald-400 font-bold">(+{item.pct_change.toFixed(1)}%)</span>
+                          </span>
+                        </div>
+                        <div className="flex justify-between items-center text-xs text-slate-400 border-t border-slate-800/80 pt-2">
+                          <span>OI Surge: <strong className="text-slate-200">+{item.oi_change.toLocaleString()}</strong></span>
+                          <span>Vol: <strong className="text-slate-200">{item.volume.toLocaleString()}</strong></span>
+                          <span>{new Date(item.timestamp).toLocaleTimeString()}</span>
+                        </div>
+                      </div>
+                    ))
+                  ) : (
+                    <div className="col-span-2 text-center text-slate-500 py-6 text-sm">
+                      No fast option surges detected in the recent scan interval.
+                    </div>
+                  )}
+                </div>
               </div>
 
               {/* Strategy Details Table */}

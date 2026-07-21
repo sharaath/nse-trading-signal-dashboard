@@ -1,5 +1,7 @@
 import os
 import time
+import math
+import pandas as pd
 import urllib.request
 import urllib.parse
 from datetime import datetime, timezone, timedelta
@@ -200,12 +202,14 @@ def main():
         
     # Start Scheduler in Background
     from apscheduler.schedulers.background import BackgroundScheduler
+    from worker.option_scanner import run_option_momentum_scan
     from fastapi import FastAPI
     import uvicorn
 
     scheduler = BackgroundScheduler()
     scheduler.add_job(run_market_scan, 'interval', minutes=15, next_run_time=datetime.now())
-    print("APScheduler polling worker successfully started in background.")
+    scheduler.add_job(run_option_momentum_scan, 'interval', minutes=1, next_run_time=datetime.now())
+    print("APScheduler polling worker (spot scan & option momentum) successfully started in background.")
     try:
         scheduler.start()
     except (KeyboardInterrupt, SystemExit):

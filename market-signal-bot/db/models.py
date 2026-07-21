@@ -31,6 +31,22 @@ class StrategyState(Base):
     strategy_name = Column(String, unique=True, index=True)
     is_enabled = Column(Boolean, default=True)
 
+class OptionMomentumHistory(Base):
+    __tablename__ = "option_momentum_history"
+
+    id = Column(Integer, primary_key=True, index=True)
+    symbol = Column(String, index=True)
+    strike = Column(Integer)
+    option_type = Column(String)
+    contract = Column(String)
+    old_premium = Column(Float)
+    new_premium = Column(Float)
+    pct_change = Column(Float)
+    oi_change = Column(Integer)
+    volume = Column(Integer)
+    spot_price = Column(Float)
+    timestamp = Column(DateTime, default=datetime.utcnow)
+
 # Create tables in startup if migrations are not run
 def init_db():
     Base.metadata.create_all(bind=engine)
