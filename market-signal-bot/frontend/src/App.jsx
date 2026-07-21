@@ -99,7 +99,7 @@ export default function App() {
     return true;
   });
 
-  const isSelectedIndex = selectedTicker.startswith ? selectedTicker.startsWith("^") : true;
+  const isSelectedIndex = selectedTicker.startsWith("^");
 
   return (
     <div className="min-h-screen bg-[#090d16] text-[#e2e8f0]">
@@ -156,7 +156,7 @@ export default function App() {
               <div className="space-y-4">
                 {filteredSignals.length > 0 ? (
                   filteredSignals.map(sig => {
-                    const isIdx = sig.symbol.startswith ? sig.symbol.startsWith("^") : sig.symbol.includes("^") || sig.instrument_type === "INDEX";
+                    const isIdx = sig.symbol.startsWith("^") || sig.instrument_type === "INDEX";
                     return (
                       <div 
                         key={sig.id} 

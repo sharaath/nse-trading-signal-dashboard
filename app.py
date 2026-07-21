@@ -8,6 +8,15 @@ import urllib.request
 import urllib.parse
 import json
 import os
+import sys
+
+# Ensure market-signal-bot modules are importable
+sys.path.append(os.path.join(os.path.dirname(__file__), "market-signal-bot"))
+from db.instruments import INSTRUMENTS_REGISTRY, get_instrument_metadata, get_grouped_instruments
+
+def get_ticker_name(ticker: str) -> str:
+    meta = get_instrument_metadata(ticker)
+    return meta.get("name", ticker.replace("^", "").replace(".NS", ""))
 
 CACHE_FILE = "last_signals.json"
 
@@ -417,38 +426,7 @@ NIFTY_NEXT_50_TICKERS = [
     "TVSSMOTOR.NS", "UNITDSPR.NS", "VBL.NS", "ZOMATO.NS", "ZYDUSLIFE.NS"
 ]
 
-TICKER_NAMES = {
-    "ADANIENT": "Adani Enterprises", "ADANIPORTS": "Adani Ports & SEZ", "APOLLOHOSP": "Apollo Hospitals", 
-    "ASIANPAINT": "Asian Paints", "AXISBANK": "Axis Bank", "BAJAJ-AUTO": "Bajaj Auto", 
-    "BAJFINANCE": "Bajaj Finance", "BAJAJFINSV": "Bajaj Finserv", "BHARTIARTL": "Bharti Airtel", 
-    "BPCL": "Bharat Petroleum", "BRITANNIA": "Britannia Industries", "CIPLA": "Cipla", 
-    "COALINDIA": "Coal India", "DIVISLAB": "Divi's Laboratories", "DRREDDY": "Dr. Reddy's Laboratories", 
-    "EICHERMOT": "Eicher Motors", "GRASIM": "Grasim Industries", "HCLTECH": "HCL Technologies", 
-    "HDFCBANK": "HDFC Bank", "HDFCLIFE": "HDFC Life Insurance", "HEROMOTOCO": "Hero MotoCorp", 
-    "HINDALCO": "Hindalco Industries", "HINDUNILVR": "Hindustan Unilever", "ICICIBANK": "ICICI Bank", 
-    "INDUSINDBK": "IndusInd Bank", "INFY": "Infosys", "ITC": "ITC Limited", "JSWSTEEL": "JSW Steel", 
-    "KOTAKBANK": "Kotak Mahindra Bank", "LT": "Larsen & Toubro", "LTM": "LTIMindtree", 
-    "M&M": "Mahindra & Mahindra", "MARUTI": "Maruti Suzuki", "NESTLEIND": "Nestle India", 
-    "NTPC": "NTPC Limited", "ONGC": "Oil & Natural Gas Corp", "POWERGRID": "Power Grid Corp", 
-    "RELIANCE": "Reliance Industries", "SBILIFE": "SBI Life Insurance", "SBIN": "State Bank of India", 
-    "SUNPHARMA": "Sun Pharmaceutical", "TATACONSUM": "Tata Consumer Products", "TMPV": "Tata Motors Passenger", 
-    "TATASTEEL": "Tata Steel", "TCS": "Tata Consultancy Services", "TECHM": "Tech Mahindra", 
-    "TITAN": "Titan Company", "ULTRACEMCO": "UltraTech Cement", "WIPRO": "Wipro Limited",
-    "ABB": "ABB India", "ACC": "ACC Limited", "ADANIENSOL": "Adani Energy Solutions",
-    "ADANIGREEN": "Adani Green Energy", "ADANIPOWER": "Adani Power", "AMBUJACEM": "Ambuja Cements",
-    "DMART": "Avenue Supermarts", "BANKBARODA": "Bank of Baroda", "BEL": "Bharat Electronics",
-    "BOSCHLTD": "Bosch Limited", "CANBK": "Canara Bank", "CGPOWER": "CG Power",
-    "CHOLAFIN": "Cholamandalam Finance", "COLPAL": "Colgate-Palmolive", "DLF": "DLF Limited",
-    "GAIL": "GAIL India", "HAL": "Hindustan Aeronautics", "HAVELLS": "Havells India",
-    "ICICIPRULI": "ICICI Prudential Life", "IOC": "Indian Oil Corp", "IRCTC": "IRCTC",
-    "IRFC": "Indian Railway Finance", "JINDALSTEL": "Jindal Steel & Power", "JIOFIN": "Jio Financial Services",
-    "LICI": "LIC of India", "MUTHOOTFIN": "Muthoot Finance", "PIDILITIND": "Pidilite Industries",
-    "PFC": "Power Finance Corp", "PNB": "Punjab National Bank", "RECLTD": "REC Limited",
-    "SHREECEM": "Shree Cement", "SIEMENS": "Siemens Limited", "SRF": "SRF Limited",
-    "TATAELXSI": "Tata Elxsi", "TATAPOWER": "Tata Power", "TRENT": "Trent Limited",
-    "TVSSMOTOR": "TVS Motor Company", "UNITDSPR": "United Spirits", "VBL": "Varun Beverages",
-    "ZOMATO": "Zomato Limited", "ZYDUSLIFE": "Zydus Lifesciences"
-}
+
 
 def calculate_confidence(row, signal_type):
     confidence = 50.0
@@ -561,7 +539,7 @@ if app_mode == "Multi-Stock Dashboard":
         
         for ticker in tickers:
             ticker_clean = ticker.split(".")[0]
-            stock_name = TICKER_NAMES.get(ticker_clean, ticker_clean)
+            stock_name = get_ticker_name(ticker)
             
             if strategy_mode == "Intraday Trading (15m)":
                 df = get_intraday_ticker_data(ticker)

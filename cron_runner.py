@@ -4,8 +4,14 @@ import ta
 import urllib.request
 import urllib.parse
 import os
+import sys
+import math
 import json
 from datetime import date, timedelta, datetime, timezone
+
+# Ensure market-signal-bot modules are importable
+sys.path.append(os.path.join(os.path.dirname(__file__), "market-signal-bot"))
+from db.instruments import INSTRUMENTS_REGISTRY, get_instrument_metadata
 
 CACHE_FILE = "last_signals.json"
 
@@ -226,45 +232,9 @@ NIFTY_NEXT_50_TICKERS = [
     "TVSSMOTOR.NS", "UNITDSPR.NS", "VBL.NS", "ZOMATO.NS", "ZYDUSLIFE.NS"
 ]
 
-TICKER_NAMES = {
-    "^NSEI": "NIFTY 50 Index", "NSEI": "NIFTY 50 Index",
-    "^BSESN": "SENSEX Index", "BSESN": "SENSEX Index",
-    "^NSEBANK": "BANKNIFTY Index", "NSEBANK": "BANKNIFTY Index",
-    "^CNXIT": "NIFTY IT Index", "CNXIT": "NIFTY IT Index",
-    "^GSPC": "S&P 500 Index", "GSPC": "S&P 500 Index",
-    "^DJI": "Dow Jones (DJIA) Index", "DJI": "Dow Jones Index",
-    "^NDX": "Nasdaq 100 Index", "NDX": "Nasdaq 100 Index",
-    "ADANIENT": "Adani Enterprises", "ADANIPORTS": "Adani Ports & SEZ", "APOLLOHOSP": "Apollo Hospitals", 
-    "ASIANPAINT": "Asian Paints", "AXISBANK": "Axis Bank", "BAJAJ-AUTO": "Bajaj Auto", 
-    "BAJFINANCE": "Bajaj Finance", "BAJAJFINSV": "Bajaj Finserv", "BHARTIARTL": "Bharti Airtel", 
-    "BPCL": "Bharat Petroleum", "BRITANNIA": "Britannia Industries", "CIPLA": "Cipla", 
-    "COALINDIA": "Coal India", "DIVISLAB": "Divi's Laboratories", "DRREDDY": "Dr. Reddy's Laboratories", 
-    "EICHERMOT": "Eicher Motors", "GRASIM": "Grasim Industries", "HCLTECH": "HCL Technologies", 
-    "HDFCBANK": "HDFC Bank", "HDFCLIFE": "HDFC Life Insurance", "HEROMOTOCO": "Hero MotoCorp", 
-    "HINDALCO": "Hindalco Industries", "HINDUNILVR": "Hindustan Unilever", "ICICIBANK": "ICICI Bank", 
-    "INDUSINDBK": "IndusInd Bank", "INFY": "Infosys", "ITC": "ITC Limited", "JSWSTEEL": "JSW Steel", 
-    "KOTAKBANK": "Kotak Mahindra Bank", "LT": "Larsen & Tourbro", "LTM": "LTIMindtree", 
-    "M&M": "Mahindra & Mahindra", "MARUTI": "Maruti Suzuki", "NESTLEIND": "Nestle India", 
-    "NTPC": "NTPC Limited", "ONGC": "Oil & Natural Gas Corp", "POWERGRID": "Power Grid Corp", 
-    "RELIANCE": "Reliance Industries", "SBILIFE": "SBI Life Insurance", "SBIN": "State Bank of India", 
-    "SUNPHARMA": "Sun Pharmaceutical", "TATACONSUM": "Tata Consumer Products", "TMPV": "Tata Motors Passenger", 
-    "TATASTEEL": "Tata Steel", "TCS": "Tata Consultancy Services", "TECHM": "Tech Mahindra", 
-    "TITAN": "Titan Company", "ULTRACEMCO": "UltraTech Cement", "WIPRO": "Wipro Limited",
-    "ABB": "ABB India", "ACC": "ACC Limited", "ADANIENSOL": "Adani Energy Solutions",
-    "ADANIGREEN": "Adani Green Energy", "ADANIPOWER": "Adani Power", "AMBUJACEM": "Ambuja Cements",
-    "DMART": "Avenue Supermarts", "BANKBARODA": "Bank of Baroda", "BEL": "Bharat Electronics",
-    "BOSCHLTD": "Bosch Limited", "CANBK": "Canara Bank", "CGPOWER": "CG Power",
-    "CHOLAFIN": "Cholamandalam Finance", "COLPAL": "Colgate-Palmolive", "DLF": "DLF Limited",
-    "GAIL": "GAIL India", "HAL": "Hindustan Aeronautics", "HAVELLS": "Havells India",
-    "ICICIPRULI": "ICICI Prudential Life", "IOC": "Indian Oil Corp", "IRCTC": "IRCTC",
-    "IRFC": "Indian Railway Finance", "JINDALSTEL": "Jindal Steel & Power", "JIOFIN": "Jio Financial Services",
-    "LICI": "LIC of India", "MUTHOOTFIN": "Muthoot Finance", "PIDILITIND": "Pidilite Industries",
-    "PFC": "Power Finance Corp", "PNB": "Punjab National Bank", "RECLTD": "REC Limited",
-    "SHREECEM": "Shree Cement", "SIEMENS": "Siemens Limited", "SRF": "SRF Limited",
-    "TATAELXSI": "Tata Elxsi", "TATAPOWER": "Tata Power", "TRENT": "Trent Limited",
-    "TVSSMOTOR": "TVS Motor Company", "UNITDSPR": "United Spirits", "VBL": "Varun Beverages",
-    "ZOMATO": "Zomato Limited", "ZYDUSLIFE": "Zydus Lifesciences"
-}
+def get_ticker_name(ticker: str) -> str:
+    meta = get_instrument_metadata(ticker)
+    return meta.get("name", ticker.replace("^", "").replace(".NS", ""))
 
 def calculate_confidence(row, signal_type):
     confidence = 50.0
@@ -336,7 +306,7 @@ def main():
     
     for ticker in tickers:
         ticker_clean = ticker.split(".")[0]  # E.g. RELIANCE instead of RELIANCE.NS
-        stock_name = TICKER_NAMES.get(ticker_clean, ticker_clean)
+        stock_name = get_ticker_name(ticker)
         
         # --- 1. SWING TRADING SCAN & MONITORING ---
         try:
@@ -419,6 +389,10 @@ def main():
                 
                 # Daily Swing Signal Transitions
                 if today_signal != prev_signal:
+                    if pd.isna(price) or math.isnan(price):
+                        print(f"Skipping {ticker}: invalid price data (NaN)")
+                        continue
+
                     is_idx = ticker.startswith("^") or ticker in ["NIFTY", "SENSEX"]
                     step = 50 if is_idx else (50 if price > 1000 else 10)
                     atm_strike = int(round(price / step) * step)
@@ -432,6 +406,10 @@ def main():
                         target_price1 = price * (1 + t1_pct)
                         target_price2 = price * (1 + t2_pct)
                         stop_loss = price * (1 - sl_pct)
+                        
+                        if pd.isna(target_price1) or pd.isna(stop_loss) or math.isnan(target_price1) or math.isnan(stop_loss):
+                            print(f"Skipping {ticker}: invalid price data (NaN)")
+                            continue
                         
                         est_prem = max(10.0, price * 0.012)
                         opt_target = est_prem * 1.30
@@ -592,6 +570,10 @@ def main():
                         
                 # Intraday Signal Transitions
                 if today_intraday_signal != prev_intraday_signal:
+                    if pd.isna(price_15m) or math.isnan(price_15m):
+                        print(f"Skipping {ticker}: invalid price data (NaN)")
+                        continue
+
                     is_idx = ticker.startswith("^") or ticker in ["NIFTY", "SENSEX"]
                     step = 50 if is_idx else (50 if price_15m > 1000 else 10)
                     atm_strike = int(round(price_15m / step) * step)
@@ -605,6 +587,10 @@ def main():
                         target_price1 = price_15m * (1 + t1_pct)
                         target_price2 = price_15m * (1 + t2_pct)
                         stop_loss = price_15m * (1 - sl_pct)
+                        
+                        if pd.isna(target_price1) or pd.isna(stop_loss) or math.isnan(target_price1) or math.isnan(stop_loss):
+                            print(f"Skipping {ticker}: invalid price data (NaN)")
+                            continue
                         
                         est_prem = max(10.0, price_15m * 0.008)
                         opt_target = est_prem * 1.25

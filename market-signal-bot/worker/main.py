@@ -75,8 +75,13 @@ def run_market_scan():
             continue
             
         latest_row = df.iloc[-1]
-        close_price = float(latest_row['Close'])
+        close_price = float(latest_row['Close']) if not pd.isna(latest_row['Close']) else float('nan')
         
+        # NaN Guard check
+        if pd.isna(close_price) or math.isnan(close_price):
+            print(f"Skipping {symbol}: invalid price data (NaN)")
+            continue
+            
         analysis = calculate_consensus_signal(df, enabled_strats, symbol=symbol)
         sig = analysis['signal']
         
@@ -100,11 +105,15 @@ def run_market_scan():
         
         # If transition occurs and is BUY/SELL, send alerts
         if sig in ["BUY", "SELL"] and sig != prev_sig:
-            emoji = "🟢 BUY" if sig == "BUY" else "🔴 SELL"
             t1 = analysis.get('target1', close_price * 1.025)
             t2 = analysis.get('target2', close_price * 1.050)
             sl = analysis.get('stop_loss', close_price * 0.985)
             
+            # Additional NaN guard on targets
+            if pd.isna(t1) or pd.isna(sl) or math.isnan(t1) or math.isnan(sl):
+                print(f"Skipping {symbol}: invalid price data (NaN)")
+                continue
+
             t1_pct = ((t1 - close_price) / close_price) * 100 if sig == "BUY" else ((close_price - t1) / close_price) * 100
             t2_pct = ((t2 - close_price) / close_price) * 100 if sig == "BUY" else ((close_price - t2) / close_price) * 100
             sl_pct = ((close_price - sl) / close_price) * 100 if sig == "BUY" else ((sl - close_price) / close_price) * 100
@@ -119,6 +128,10 @@ def run_market_scan():
             end_win_str = (ist_now + timedelta(minutes=5)).strftime("%I:%M %p IST")
             
             sym_clean = symbol.replace("^", "").replace(".NS", "")
+            
+            inst_type = analysis.get('instrument_type', 'STOCK')
+            deriv_etf = analysis.get('derivative_etf', 'Derivatives/ETF')
+            routing_note = f"\n⚠️ *Index Instrument:* Not directly tradable — route via {deriv_etf}.\n" if inst_type == "INDEX" else ""
             
             if sig == "BUY":
                 msg = (
@@ -136,7 +149,8 @@ def run_market_scan():
                     f"Contract: `{opt_contract}`\n"
                     f"Premium Entry: ₹{opt_entry:,.2f}\n\n"
                     f"🎯 *Option Target:* ₹{opt_target:,.2f} (+30%)\n"
-                    f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n\n"
+                    f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n"
+                    f"{routing_note}\n"
                     f"📈 *Confidence:* {analysis['confidence']:.0f}%\n"
                     f"Timeframe: 15 Minutes\n"
                     f"Strategy: EMA20 + MACD + RSI"
@@ -151,7 +165,8 @@ def run_market_scan():
                     f"Contract: `{opt_contract}`\n"
                     f"Premium Entry: ₹{opt_entry:,.2f}\n\n"
                     f"🎯 *Option Target:* ₹{opt_target:,.2f} (+30%)\n"
-                    f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n\n"
+                    f"🛑 *Option Stop Loss:* ₹{opt_sl:,.2f} (-15%)\n"
+                    f"{routing_note}\n"
                     f"📈 *Confidence:* {analysis['confidence']:.0f}%\n"
                     f"Timeframe: 15 Minutes\n"
                     f"Strategy: EMA20 + MACD + RSI"

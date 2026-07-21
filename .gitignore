@@ -3,3 +3,15 @@
 local_test.db
 market-signal-bot/local_test.db
 market-signal-bot/.env
+
+# Python Bytecode
+__pycache__/
+*.pyc
+
+# Runtime generated cache & reports
+active_trades.json
+active_intraday_trades.json
+last_signals.json
+last_intraday_signals.json
+daily_scan_report.md
+

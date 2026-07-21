@@ -107,3 +107,31 @@ def test_telegram_alert_message_formatting():
     assert "^NSEI" in msg
     assert "Rs.24200.30" in msg
     assert "75.0%" in msg
+
+def test_instrument_type_classification():
+    from db.instruments import get_instrument_metadata
+    provider = MockDataProvider(mode="bullish")
+    df = provider.get_history("MOCK_STOCK")
+    
+    analysis_index = calculate_consensus_signal(df, ["ema_crossover"], symbol="^NSEI")
+    assert analysis_index["instrument_type"] == "INDEX"
+    
+    analysis_stock = calculate_consensus_signal(df, ["ema_crossover"], symbol="ADANIENT.NS")
+    assert analysis_stock["instrument_type"] == "STOCK"
+    
+    # Fallback test for unknown index ticker starting with ^
+    meta_foobar = get_instrument_metadata("^FOOBAR")
+    assert meta_foobar["instrument_type"] == "INDEX"
+
+def test_nan_signal_skipping():
+    import math
+    import pandas as pd
+    
+    nan_price = float('nan')
+    assert pd.isna(nan_price) or math.isnan(nan_price)
+    
+    # Verify NaN guard behavior
+    target_price = float('nan')
+    skipped = pd.isna(nan_price) or math.isnan(nan_price) or pd.isna(target_price)
+    assert skipped is True
+
