@@ -151,7 +151,11 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
 
     # --- Calculate Target Points, Stop Loss & Option Recommendations ---
     close_price = float(row['Close'])
-    is_index = symbol and (symbol.startswith("^") or symbol in ["NIFTY", "BANKNIFTY", "SENSEX"])
+    
+    # Retrieve metadata for instrument classification & routing
+    from db.instruments import get_instrument_metadata
+    meta = get_instrument_metadata(symbol if symbol else "^NSEI")
+    is_index = meta["instrument_type"] == "INDEX"
     
     if is_index:
         step = 100 if "BSESN" in str(symbol) or "SENSEX" in str(symbol) else 50
@@ -161,7 +165,7 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
         target1_pct, target2_pct, sl_pct = 0.025, 0.050, 0.015
         
     atm_strike = int(round(close_price / step) * step)
-    symbol_name = symbol.replace("^", "").replace(".NS", "") if symbol else "NIFTY"
+    symbol_name = meta["clean_symbol"]
     
     if signal == "BUY":
         target1 = close_price * (1 + target1_pct)
@@ -201,6 +205,14 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
         "option_contract": opt_contract,
         "option_entry": est_premium,
         "option_target": opt_target,
-        "option_sl": opt_sl
+        "option_sl": opt_sl,
+        "instrument_type": meta["instrument_type"],
+        "name": meta["name"],
+        "exchange": meta["exchange"],
+        "country": meta["country"],
+        "category": meta["category"],
+        "weighting_method": meta["weighting_method"],
+        "is_tradable_spot": meta["is_tradable_spot"],
+        "derivative_etf": meta["derivative_etf"]
     }
 

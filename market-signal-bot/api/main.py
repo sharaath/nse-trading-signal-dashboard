@@ -137,6 +137,8 @@ async def shutdown_event():
         await tg_app.shutdown()
         print("Consolidated: Telegram Bot stopped.")
 
+from db.instruments import get_grouped_instruments, get_instrument_metadata, INSTRUMENTS_REGISTRY
+
 # Pydantic Schemas
 class StrategyToggle(BaseModel):
     strategy_name: str
@@ -145,6 +147,7 @@ class StrategyToggle(BaseModel):
 class SignalResponse(BaseModel):
     id: int
     symbol: str
+    instrument_type: str = "STOCK"
     price: float
     signal: str
     confidence: float
@@ -165,9 +168,14 @@ def health_check():
         "database_connected": True
     }
 
+@app.get("/instruments")
+def get_instruments():
+    """Returns all available instruments categorized into Indices vs Stocks with full metadata."""
+    return get_grouped_instruments()
+
 @app.get("/signals/latest", response_model=List[SignalResponse])
 def get_latest_signals(db: Session = Depends(get_db)):
-    symbols = ["^NSEI", "^BSESN", "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS"]
+    symbols = list(INSTRUMENTS_REGISTRY.keys())
     latest_signals = []
     
     for sym in symbols:

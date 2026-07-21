@@ -7,6 +7,7 @@ class SignalHistory(Base):
     
     id = Column(Integer, primary_key=True, index=True)
     symbol = Column(String, index=True)
+    instrument_type = Column(String, default="STOCK")  # STOCK, INDEX
     price = Column(Float)
     signal = Column(String)  # BUY, SELL, HOLD
     confidence = Column(Float)  # percentage (e.g. 75.0)

@@ -687,7 +687,9 @@ if app_mode == "Multi-Stock Dashboard":
             col_m2.metric("🔴 SELL Signals Active", sell_count)
             col_m3.metric("🟡 HOLD / Neutral Tickers", hold_count)
             
-            # Apply Filter
+            # Instrument Type & Signal Filters
+            df_full['Instrument Type'] = df_full['Ticker'].apply(lambda x: "INDEX" if (x.startswith("^") or x in ["NIFTY", "SENSEX", "BANKNIFTY", "NIFTYIT", "SPX", "DJIA", "NDX"]) else "STOCK")
+            
             if sig_filter == "BUY & SELL Only":
                 df_filtered = df_full[df_full['Signal'].isin(["BUY", "SELL"])]
             elif sig_filter == "BUY Only":
@@ -708,14 +710,17 @@ if app_mode == "Multi-Stock Dashboard":
                 st.markdown("<div class='no-trade-box'>No Trade - Strategy Conditions Not Met.</div>", unsafe_allow_html=True)
             else:
                 st.dataframe(
-                    df_filtered[['Ticker', 'Name', 'Price (₹)', 'Change %', 'Display Signal', 'Entry (₹)', 'Stop Loss (₹)', 'Target 1 (₹)', 'Target 2 (₹)', 'RRR', 'Confidence (%)', 'Position Size', 'Reason', 'Indicators', 'Time']],
+                    df_filtered[[
+                        "Display Signal", "Ticker", "Instrument Type", "Name", "Price (₹)",
+                        "Target 1 (₹)", "Target 2 (₹)", "Stop Loss (₹)", "RRR",
+                        "Confidence (%)", "Position Size", "Reason", "Indicators", "Time"
+                    ]],
                     column_config={
-                        "Ticker": st.column_config.TextColumn("Ticker", width="small"),
-                        "Name": st.column_config.TextColumn("Company Name", width="medium"),
-                        "Price (₹)": st.column_config.NumberColumn("Price (₹)", format="₹%.2f"),
-                        "Change %": st.column_config.NumberColumn("Change %", format="%.2f%%"),
-                        "Display Signal": st.column_config.TextColumn("Signal State", width="small"),
-                        "Entry (₹)": st.column_config.NumberColumn("Entry", format="₹%.2f"),
+                        "Display Signal": st.column_config.TextColumn("Signal"),
+                        "Ticker": st.column_config.TextColumn("Ticker"),
+                        "Instrument Type": st.column_config.TextColumn("Type"),
+                        "Name": st.column_config.TextColumn("Instrument / Company"),
+                        "Price (₹)": st.column_config.NumberColumn("Price", format="₹%.2f"),
                         "Stop Loss (₹)": st.column_config.NumberColumn("Stop Loss", format="₹%.2f"),
                         "Target 1 (₹)": st.column_config.NumberColumn("Target 1", format="₹%.2f"),
                         "Target 2 (₹)": st.column_config.NumberColumn("Target 2", format="₹%.2f"),

@@ -203,7 +203,8 @@ def get_completed_signal_row(df):
 # MAIN CRON SCANNER & REPORT GENERATION
 # -------------------------------------------------------------
 NIFTY_50_TICKERS = [
-    "^NSEI", "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
+    "^NSEI", "^BSESN", "^NSEBANK", "^CNXIT", "^GSPC", "^DJI", "^NDX",
+    "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
     "BAJAJ-AUTO.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "BHARTIARTL.NS", "BPCL.NS",
     "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DIVISLAB.NS", "DRREDDY.NS",
     "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS", "HDFCLIFE.NS",
@@ -227,6 +228,12 @@ NIFTY_NEXT_50_TICKERS = [
 
 TICKER_NAMES = {
     "^NSEI": "NIFTY 50 Index", "NSEI": "NIFTY 50 Index",
+    "^BSESN": "SENSEX Index", "BSESN": "SENSEX Index",
+    "^NSEBANK": "BANKNIFTY Index", "NSEBANK": "BANKNIFTY Index",
+    "^CNXIT": "NIFTY IT Index", "CNXIT": "NIFTY IT Index",
+    "^GSPC": "S&P 500 Index", "GSPC": "S&P 500 Index",
+    "^DJI": "Dow Jones (DJIA) Index", "DJI": "Dow Jones Index",
+    "^NDX": "Nasdaq 100 Index", "NDX": "Nasdaq 100 Index",
     "ADANIENT": "Adani Enterprises", "ADANIPORTS": "Adani Ports & SEZ", "APOLLOHOSP": "Apollo Hospitals", 
     "ASIANPAINT": "Asian Paints", "AXISBANK": "Axis Bank", "BAJAJ-AUTO": "Bajaj Auto", 
     "BAJFINANCE": "Bajaj Finance", "BAJAJFINSV": "Bajaj Finserv", "BHARTIARTL": "Bharti Airtel", 

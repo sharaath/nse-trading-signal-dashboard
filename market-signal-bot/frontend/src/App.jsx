@@ -90,6 +90,17 @@ export default function App() {
     fetchHistory(selectedTicker);
   }, [selectedTicker]);
 
+  const [typeFilter, setTypeFilter] = useState("ALL"); // ALL, INDEX, STOCK
+
+  const filteredSignals = latestSignals.filter(sig => {
+    const isIdx = sig.symbol.startsWith("^") || sig.instrument_type === "INDEX";
+    if (typeFilter === "INDEX") return isIdx;
+    if (typeFilter === "STOCK") return !isIdx;
+    return true;
+  });
+
+  const isSelectedIndex = selectedTicker.startswith ? selectedTicker.startsWith("^") : true;
+
   return (
     <div className="min-h-screen bg-[#090d16] text-[#e2e8f0]">
       {/* Header bar */}
@@ -100,7 +111,7 @@ export default function App() {
           </div>
           <div>
             <h1 className="text-xl font-bold tracking-wider bg-gradient-to-r from-white to-slate-400 bg-clip-text text-transparent">MarketSignalBot</h1>
-            <p className="text-xs text-sky-400 font-semibold uppercase tracking-widest">Intraday Analysis & Alert Console</p>
+            <p className="text-xs text-sky-400 font-semibold uppercase tracking-widest">Intraday & Index Derivative Console</p>
           </div>
         </div>
 
@@ -125,7 +136,7 @@ export default function App() {
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {/* Left Feed */}
             <div className="lg:col-span-1 bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-xl relative overflow-hidden">
-              <div className="flex justify-between items-center mb-6">
+              <div className="flex justify-between items-center mb-4">
                 <div className="flex items-center space-x-2">
                   <BarChart2 className="w-5 h-5 text-sky-400" />
                   <h2 className="text-lg font-bold">Monitored Tickers</h2>
@@ -135,31 +146,46 @@ export default function App() {
                 </button>
               </div>
 
+              {/* Instrument Type Filter Pills */}
+              <div className="flex space-x-1 bg-slate-900/80 p-1 rounded-xl border border-[#1e293b] mb-6 text-xs font-semibold">
+                <button onClick={() => setTypeFilter("ALL")} className={`flex-1 py-1.5 rounded-lg transition-colors ${typeFilter === "ALL" ? "bg-sky-500/20 text-sky-400 font-bold border border-sky-500/30" : "text-slate-400 hover:text-slate-200"}`}>All</button>
+                <button onClick={() => setTypeFilter("INDEX")} className={`flex-1 py-1.5 rounded-lg transition-colors ${typeFilter === "INDEX" ? "bg-purple-500/20 text-purple-400 font-bold border border-purple-500/30" : "text-slate-400 hover:text-slate-200"}`}>Indices</button>
+                <button onClick={() => setTypeFilter("STOCK")} className={`flex-1 py-1.5 rounded-lg transition-colors ${typeFilter === "STOCK" ? "bg-emerald-500/20 text-emerald-400 font-bold border border-emerald-500/30" : "text-slate-400 hover:text-slate-200"}`}>Stocks</button>
+              </div>
+
               <div className="space-y-4">
-                {latestSignals.length > 0 ? (
-                  latestSignals.map(sig => (
-                    <div 
-                      key={sig.id} 
-                      onClick={() => setSelectedTicker(sig.symbol)}
-                      className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer ${selectedTicker === sig.symbol ? 'bg-sky-500/5 border-sky-500/30 shadow-md shadow-sky-500/5' : 'bg-slate-900/50 border-[#1e293b] hover:border-slate-700'}`}
-                    >
-                      <div className="flex justify-between items-start mb-2">
-                        <div>
-                          <span className="font-bold text-base tracking-wide text-white">{sig.symbol}</span>
-                          <p className="text-xs text-slate-400">{new Date(sig.timestamp).toLocaleTimeString()}</p>
+                {filteredSignals.length > 0 ? (
+                  filteredSignals.map(sig => {
+                    const isIdx = sig.symbol.startswith ? sig.symbol.startsWith("^") : sig.symbol.includes("^") || sig.instrument_type === "INDEX";
+                    return (
+                      <div 
+                        key={sig.id} 
+                        onClick={() => setSelectedTicker(sig.symbol)}
+                        className={`p-4 rounded-xl border transition-all duration-200 cursor-pointer ${selectedTicker === sig.symbol ? 'bg-sky-500/5 border-sky-500/30 shadow-md shadow-sky-500/5' : 'bg-slate-900/50 border-[#1e293b] hover:border-slate-700'}`}
+                      >
+                        <div className="flex justify-between items-start mb-2">
+                          <div>
+                            <div className="flex items-center space-x-2">
+                              <span className="font-bold text-base tracking-wide text-white">{sig.symbol}</span>
+                              <span className={`px-2 py-0.5 rounded text-[10px] font-extrabold uppercase ${isIdx ? 'bg-purple-500/10 text-purple-400 border border-purple-500/20' : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'}`}>
+                                {isIdx ? 'INDEX' : 'STOCK'}
+                              </span>
+                            </div>
+                            <p className="text-xs text-slate-400 mt-0.5">{new Date(sig.timestamp).toLocaleTimeString()}</p>
+                          </div>
+                          <span className={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider ${sig.signal === 'BUY' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : sig.signal === 'SELL' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
+                            {sig.signal}
+                          </span>
                         </div>
-                        <span className={`px-2.5 py-0.5 rounded-full text-xs font-black uppercase tracking-wider ${sig.signal === 'BUY' ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20' : sig.signal === 'SELL' ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'}`}>
-                          {sig.signal}
-                        </span>
+                        <div className="flex justify-between items-end">
+                          <span className="text-sm font-bold text-slate-300">Rs.{sig.price.toFixed(2)}</span>
+                          {sig.signal !== 'HOLD' && <span className="text-xs text-slate-400">Confidence: <span className="font-semibold text-sky-400">{sig.confidence.toFixed(0)}%</span></span>}
+                        </div>
                       </div>
-                      <div className="flex justify-between items-end">
-                        <span className="text-sm font-bold text-slate-300">Rs.{sig.price.toFixed(2)}</span>
-                        {sig.signal !== 'HOLD' && <span className="text-xs text-slate-400">Confidence: <span className="font-semibold text-sky-400">{sig.confidence.toFixed(0)}%</span></span>}
-                      </div>
-                    </div>
-                  ))
+                    );
+                  })
                 ) : (
-                  <p className="text-slate-500 text-center text-sm py-8">No active signals scanned yet.</p>
+                  <p className="text-slate-500 text-center text-sm py-8">No active signals match the selected filter.</p>
                 )}
               </div>
             </div>
@@ -167,9 +193,16 @@ export default function App() {
             {/* Right Chart Analysis */}
             <div className="lg:col-span-2 space-y-8">
               <div className="bg-[#0b0f19] border border-[#1e293b] rounded-2xl p-6 shadow-xl">
-                <div className="flex justify-between items-center mb-6 border-b border-[#1e293b] pb-4">
+                <div className="flex justify-between items-center mb-4 border-b border-[#1e293b] pb-4">
                   <div>
-                    <span className="text-xs text-sky-400 uppercase font-black tracking-widest">Currently Analyzing</span>
+                    <div className="flex items-center space-x-2">
+                      <span className="text-xs text-sky-400 uppercase font-black tracking-widest">Currently Analyzing</span>
+                      {selectedTicker.startsWith("^") && (
+                        <span className="px-2 py-0.5 rounded text-[10px] font-black bg-purple-500/15 text-purple-400 border border-purple-500/30">
+                          INDEX (DERIVATIVES & ETF ROUTED)
+                        </span>
+                      )}
+                    </div>
                     <h2 className="text-2xl font-black text-white tracking-tight">{selectedTicker}</h2>
                   </div>
                   {history.length > 0 && (

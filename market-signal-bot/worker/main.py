@@ -11,7 +11,10 @@ from db.models import init_db, SignalHistory, UserSubscription, StrategyState
 from signals.providers import YFinanceDataProvider
 from signals.engine import calculate_consensus_signal
 
-MONITORED_TICKERS = ["^NSEI", "^BSESN", "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS"]
+MONITORED_TICKERS = [
+    "^NSEI", "^BSESN", "^NSEBANK", "^CNXIT", "^GSPC", "^DJI", "^NDX",
+    "RELIANCE.NS", "TCS.NS", "HDFCBANK.NS", "INFY.NS", "ADANIENT.NS", "COALINDIA.NS"
+]
 TELEGRAM_BOT_TOKEN = os.environ.get("TELEGRAM_BOT_TOKEN")
 PERSONAL_USE_ONLY = os.environ.get("PERSONAL_USE_ONLY", "true").lower() == "true"
 
@@ -36,9 +39,6 @@ def get_enabled_strategies(db: Session) -> list:
     return [s.strategy_name for s in strategies]
 
 def get_last_signal(db: Session, symbol: str) -> str:
-    last_record = db.query(SignalHistory).filter(SignalHistory.symbol == symbol).order_index = SignalHistory.timestamp.desc()
-    # Wait, SQLAlchemy order_by syntax is order_by(desc(SignalHistory.timestamp))
-    # Let's write it cleanly:
     from sqlalchemy import desc
     last_record = db.query(SignalHistory).filter(SignalHistory.symbol == symbol).order_by(desc(SignalHistory.timestamp)).first()
     return last_record.signal if last_record else "HOLD"
@@ -86,6 +86,7 @@ def run_market_scan():
         # Save signal in history
         history_entry = SignalHistory(
             symbol=symbol,
+            instrument_type=analysis.get('instrument_type', 'STOCK'),
             price=close_price,
             signal=sig,
             confidence=analysis['confidence'],
