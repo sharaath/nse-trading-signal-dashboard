@@ -311,6 +311,10 @@ def main():
         # --- 1. SWING TRADING SCAN & MONITORING ---
         try:
             df = yf.download(ticker, start=str(start_date), end=str(date.today() + timedelta(days=1)), progress=False)
+            if isinstance(df.columns, pd.MultiIndex):
+                df.columns = df.columns.get_level_values(0)
+            df = df.loc[:, ~df.columns.duplicated()]
+            df = df.dropna(subset=['Close'])
             if df.empty or len(df) < 200:
                 print(f"Skipping {ticker} Daily: Empty or insufficient data.")
                 failed_scans += 1
@@ -318,6 +322,10 @@ def main():
                 df = calculate_indicators(df)
                 latest_live = df.iloc[-1]
                 price = float(latest_live['Close'])
+                if pd.isna(price) or math.isnan(price):
+                    print(f"Skipping {ticker} Daily: Invalid price data (NaN).")
+                    failed_scans += 1
+                    continue
                 
                 # Use completed day's signal during market hours to prevent overwriting cache with live HOLD
                 signal_row = get_completed_signal_row(df)
@@ -487,6 +495,10 @@ def main():
         # --- 2. INTRADAY SCANNING & MONITORING (15m Timeframe) ---
         try:
             df_15m = yf.download(ticker, period="5d", interval="15m", progress=False)
+            if isinstance(df_15m.columns, pd.MultiIndex):
+                df_15m.columns = df_15m.columns.get_level_values(0)
+            df_15m = df_15m.loc[:, ~df_15m.columns.duplicated()]
+            df_15m = df_15m.dropna(subset=['Close'])
             if df_15m.empty or len(df_15m) < 20:
                 print(f"Skipping {ticker} Intraday: Empty or insufficient data.")
                 failed_scans += 1
@@ -494,6 +506,10 @@ def main():
                 df_15m = calculate_intraday_indicators(df_15m, ticker)
                 latest_live_15m = df_15m.iloc[-1]
                 price_15m = float(latest_live_15m['Close'])
+                if pd.isna(price_15m) or math.isnan(price_15m):
+                    print(f"Skipping {ticker} Intraday: Invalid price data (NaN).")
+                    failed_scans += 1
+                    continue
                 
                 # If market is active, today's last 15m candle is incomplete (live), so use the completed index [-2]
                 signal_row_15m = latest_live_15m

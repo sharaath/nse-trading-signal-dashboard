@@ -550,6 +550,8 @@ if app_mode == "Multi-Stock Dashboard":
                 min_len = 200
                 calc_func = calculate_indicators
                 
+            if df is not None:
+                df = df.dropna(subset=['Close'])
             if df is not None and len(df) >= min_len:
                 try:
                     df = calc_func(df)
@@ -557,8 +559,12 @@ if app_mode == "Multi-Stock Dashboard":
                     prev = df.iloc[-2] if len(df) > 1 else latest
                     
                     close_val = float(latest['Close'])
+                    if pd.isna(close_val) or math.isnan(close_val):
+                        failed_scans += 1
+                        continue
+
                     prev_close = float(prev['Close'])
-                    pct_change = ((close_val - prev_close) / prev_close) * 100
+                    pct_change = ((close_val - prev_close) / prev_close) * 100 if prev_close > 0 else 0.0
                     
                     signal_row = get_completed_signal_row(df)
                     sig = signal_row['Signal']
@@ -629,9 +635,20 @@ if app_mode == "Multi-Stock Dashboard":
                             prev_signal = last_sigs.get(tick, "HOLD")
                             if signal != prev_signal:
                                 row_data = next(r for r in results if r['Ticker'] == tick.split(".")[0])
-                                price = row_data['Price (₹)']
+                                price = row_data.get('Price (₹)')
+                                t1 = row_data.get('Target 1 (₹)')
+                                sl = row_data.get('Stop Loss (₹)')
+                                
+                                # NaN Guard Check
+                                if price is None or pd.isna(price) or math.isnan(price):
+                                    print(f"Skipping Telegram alert for {tick}: Invalid price data (NaN)")
+                                    continue
+                                    
                                 if signal == "BUY":
-                                    msg = f"⚡ *INTRADAY BUY SIGNAL*\n\n*Ticker:* `{row_data['Ticker']}`\n*Entry Price:* ₹{price:.2f}\n*Target (+1%):* ₹{row_data['Target 1 (₹)']:.2f}\n*Stop Loss (-0.5%):* ₹{row_data['Stop Loss (₹)']:.2f}\n\n_Indicators: Price is above EMA20, RSI is oversold (<40) in pullback, MACD has turned bullish, and volume is above average._"
+                                    if t1 is None or sl is None or pd.isna(t1) or pd.isna(sl) or math.isnan(t1) or math.isnan(sl):
+                                        print(f"Skipping Telegram alert for {tick}: Invalid target/SL data (NaN)")
+                                        continue
+                                    msg = f"⚡ *INTRADAY BUY SIGNAL*\n\n*Ticker:* `{row_data['Ticker']}`\n*Entry Price:* ₹{price:.2f}\n*Target (+1%):* ₹{t1:.2f}\n*Stop Loss (-0.5%):* ₹{sl:.2f}\n\n_Indicators: Price is above EMA20, RSI is oversold (<40) in pullback, MACD has turned bullish, and volume is above average._"
                                     send_telegram_message(token_input, chat_id_input, msg)
                                 elif signal == "SELL":
                                     msg = f"⚡ *INTRADAY SELL SIGNAL*\n\n*Ticker:* `{row_data['Ticker']}`\n*Exit Price:* ₹{price:.2f}\n\n_Indicators: Price fell below EMA20, or RSI is overbought with MACD bearish crossover._"
@@ -646,9 +663,20 @@ if app_mode == "Multi-Stock Dashboard":
                             prev_signal = last_sigs.get(tick, "HOLD")
                             if signal != prev_signal:
                                 row_data = next(r for r in results if r['Ticker'] == tick.split(".")[0])
-                                price = row_data['Price (₹)']
+                                price = row_data.get('Price (₹)')
+                                t1 = row_data.get('Target 1 (₹)')
+                                sl = row_data.get('Stop Loss (₹)')
+                                
+                                # NaN Guard Check
+                                if price is None or pd.isna(price) or math.isnan(price):
+                                    print(f"Skipping Telegram alert for {tick}: Invalid price data (NaN)")
+                                    continue
+                                    
                                 if signal == "BUY":
-                                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{row_data['Ticker']}`\n*Action:* BUY tomorrow (Market Open)\n*Entry Price:* ₹{price:.2f}\n*Target Price (+5%):* ₹{row_data['Target 1 (₹)']:.2f}\n*Stop Loss (-3%):* ₹{row_data['Stop Loss (₹)']:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
+                                    if t1 is None or sl is None or pd.isna(t1) or pd.isna(sl) or math.isnan(t1) or math.isnan(sl):
+                                        print(f"Skipping Telegram alert for {tick}: Invalid target/SL data (NaN)")
+                                        continue
+                                    msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{row_data['Ticker']}`\n*Action:* BUY tomorrow (Market Open)\n*Entry Price:* ₹{price:.2f}\n*Target Price (+5%):* ₹{t1:.2f}\n*Stop Loss (-3%):* ₹{sl:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
                                     send_telegram_message(token_input, chat_id_input, msg)
                                 elif signal == "SELL":
                                     msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{row_data['Ticker']}`\n*Action:* SELL / Exit tomorrow\n*Exit Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
