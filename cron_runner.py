@@ -88,9 +88,11 @@ def send_telegram_message(token, chat_id, message):
     try:
         req = urllib.request.Request(url, data=data)
         with urllib.request.urlopen(req, timeout=10) as response:
-            return response.read()
+            res_content = response.read()
+            print(f"Telegram notification successfully dispatched to chat: {chat_id}")
+            return res_content
     except Exception as e:
-        print(f"Error sending Telegram message: {e}")
+        print(f"WARNING: Telegram notification dispatch failed for chat {chat_id}. Details: {e}")
         return None
 
 # -------------------------------------------------------------
@@ -98,11 +100,13 @@ def send_telegram_message(token, chat_id, message):
 # -------------------------------------------------------------
 def calculate_indicators(df):
     df = df.copy()
-    
     if isinstance(df.columns, pd.MultiIndex):
         df.columns = df.columns.get_level_values(0)
     df = df.loc[:, ~df.columns.duplicated()]
-    
+    for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
+        if col in df and isinstance(df[col], pd.DataFrame):
+            df[col] = df[col].iloc[:, 0]
+            
     df['RSI'] = ta.momentum.RSIIndicator(df['Close']).rsi()
     macd_obj = ta.trend.MACD(df['Close'])
     df['MACD'] = macd_obj.macd()
@@ -113,11 +117,16 @@ def calculate_indicators(df):
     df['ADX'] = ta.trend.ADXIndicator(df['High'], df['Low'], df['Close']).adx()
     
     def get_signal(row):
-        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['MA200']) or pd.isna(row['Vol_SMA20']) or pd.isna(row['ADX']):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']):
             return 'HOLD'
         
-        is_buy = (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Close'] > row['MA200']) and (row['Volume'] > 1.5 * row['Vol_SMA20']) and (row['ADX'] > 25)
-        is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal'])
+        # Bullish: MACD crosses above Signal Line AND RSI is between 35 and 65 (not overbought)
+        is_buy = (row['MACD'] > row['MACD_Signal']) and (35 <= row['RSI'] <= 65)
+        if 'MA200' in row and not pd.isna(row['MA200']):
+            is_buy = is_buy and (row['Close'] > row['MA200'] * 0.97)
+            
+        # Bearish: MACD crosses below Signal Line AND RSI > 60
+        is_sell = (row['MACD'] < row['MACD_Signal']) and (row['RSI'] > 60)
         
         if is_buy:
             return 'BUY'
@@ -143,26 +152,22 @@ def calculate_intraday_indicators(df, ticker):
     df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
     df['ADX'] = ta.trend.ADXIndicator(df['High'], df['Low'], df['Close']).adx()
     
-    # Download daily history to calculate SMA200 alignment
-    is_above_daily_sma200 = True
-    try:
-        daily_df = yf.download(ticker, period="1y", interval="1d", progress=False)
-        if isinstance(daily_df.columns, pd.MultiIndex):
-            daily_df.columns = daily_df.columns.get_level_values(0)
-        daily_df = daily_df.loc[:, ~daily_df.columns.duplicated()]
-        daily_df['MA200'] = daily_df['Close'].rolling(200).mean()
-        daily_sma200 = float(daily_df.iloc[-1]['MA200'])
-        daily_close = float(daily_df.iloc[-1]['Close'])
-        is_above_daily_sma200 = daily_close > daily_sma200
-    except Exception:
-        pass
-    
     def get_signal(row):
-        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['EMA20']) or pd.isna(row['Vol_SMA20']) or pd.isna(row['ADX']):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['EMA20']):
             return 'HOLD'
         
-        is_buy = (row['Close'] > row['EMA20']) and (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Volume'] > 1.5 * row['Vol_SMA20']) and (row['ADX'] > 25) and is_above_daily_sma200
-        is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal']) or (row['Close'] < row['EMA20'])
+        macd_bullish = row['MACD'] > row['MACD_Signal']
+        rsi_healthy_buy = (40 <= row['RSI'] <= 68)
+        price_above_ema = (row['Close'] >= row['EMA20'])
+        
+        is_buy = macd_bullish and rsi_healthy_buy and price_above_ema
+        
+        macd_bearish = row['MACD'] < row['MACD_Signal']
+        rsi_high_sell = (row['RSI'] >= 55)
+        price_below_ema = (row['Close'] < row['EMA20'])
+        
+        # Proper parentheses: Requires MACD bearish AND RSI high AND price below EMA20
+        is_sell = macd_bearish and rsi_high_sell and price_below_ema
         
         if is_buy:
             return 'BUY'
@@ -198,7 +203,7 @@ def get_completed_signal_row(df):
 # MAIN CRON SCANNER & REPORT GENERATION
 # -------------------------------------------------------------
 NIFTY_50_TICKERS = [
-    "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
+    "^NSEI", "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
     "BAJAJ-AUTO.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "BHARTIARTL.NS", "BPCL.NS",
     "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DIVISLAB.NS", "DRREDDY.NS",
     "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS", "HDFCLIFE.NS",
@@ -221,6 +226,7 @@ NIFTY_NEXT_50_TICKERS = [
 ]
 
 TICKER_NAMES = {
+    "^NSEI": "NIFTY 50 Index", "NSEI": "NIFTY 50 Index",
     "ADANIENT": "Adani Enterprises", "ADANIPORTS": "Adani Ports & SEZ", "APOLLOHOSP": "Apollo Hospitals", 
     "ASIANPAINT": "Asian Paints", "AXISBANK": "Axis Bank", "BAJAJ-AUTO": "Bajaj Auto", 
     "BAJFINANCE": "Bajaj Finance", "BAJAJFINSV": "Bajaj Finserv", "BHARTIARTL": "Bharti Airtel", 
@@ -406,21 +412,60 @@ def main():
                 
                 # Daily Swing Signal Transitions
                 if today_signal != prev_signal:
+                    is_idx = ticker.startswith("^") or ticker in ["NIFTY", "SENSEX"]
+                    step = 50 if is_idx else (50 if price > 1000 else 10)
+                    atm_strike = int(round(price / step) * step)
+                    sym_clean = ticker_clean.replace("^", "")
+                    
                     if today_signal == "BUY":
-                        target_price = price * 1.05
-                        stop_loss = price * 0.97
-                        msg = f"🟢 *BUY SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* BUY (Market Open / Live)\n*Entry Price:* ₹{price:.2f}\n*Target Price (+5%):* ₹{target_price:.2f}\n*Stop Loss (-3%):* ₹{stop_loss:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is low, MACD momentum is positive, volume is high, and price is above MA200._"
+                        t1_pct = 0.015 if is_idx else 0.025
+                        t2_pct = 0.030 if is_idx else 0.050
+                        sl_pct = 0.010 if is_idx else 0.015
+                        
+                        target_price1 = price * (1 + t1_pct)
+                        target_price2 = price * (1 + t2_pct)
+                        stop_loss = price * (1 - sl_pct)
+                        
+                        est_prem = max(10.0, price * 0.012)
+                        opt_target = est_prem * 1.30
+                        opt_sl = est_prem * 0.85
+                        
+                        msg = (
+                            f"🟢 *SWING BUY SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
+                            f"*Action:* BUY (Market Open / Live)\n"
+                            f"*Spot Entry Price:* ₹{price:.2f}\n\n"
+                            f"🎯 *Spot Target 1 ({t1_pct*100:.1f}%):* ₹{target_price1:.2f}\n"
+                            f"🎯 *Spot Target 2 ({t2_pct*100:.1f}%):* ₹{target_price2:.2f}\n"
+                            f"🛑 *Spot Stop Loss (-{sl_pct*100:.1f}%):* ₹{stop_loss:.2f}\n\n"
+                            f"📊 *RECOMMENDED OPTION TRADE (CE)*\n"
+                            f"*Contract:* `{sym_clean} {atm_strike} CE`\n"
+                            f"*Est. Premium:* ₹{est_prem:.2f}\n"
+                            f"*Option Target (+30%):* ₹{opt_target:.2f}\n"
+                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n\n"
+                            f"*Date:* {date.today()}\n"
+                            f"_Rationale: RSI momentum rising & MACD bullish crossover confirmation._"
+                        )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent BUY alert for {ticker}")
                         
                         active_trades[ticker_clean] = {
                             "entry_price": price,
-                            "target_price": target_price,
+                            "target_price": target_price1,
                             "stop_loss": stop_loss,
                             "date": str(date.today())
                         }
                     elif today_signal == "SELL":
-                        msg = f"🔴 *SELL SIGNAL TRIGGERED*\n\n*Ticker:* `{ticker_clean}`\n*Action:* SELL / Exit immediately\n*Exit Price:* ₹{price:.2f}\n*Date:* {date.today()}\n\n_Indicators alignment: RSI is overbought or MACD momentum crossover has turned bearish._"
+                        msg = (
+                            f"🔴 *SWING SELL SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
+                            f"*Action:* SELL / Exit Long\n"
+                            f"*Exit Spot Price:* ₹{price:.2f}\n\n"
+                            f"📊 *RECOMMENDED OPTION TRADE (PE)*\n"
+                            f"*Contract:* `{sym_clean} {atm_strike} PE`\n\n"
+                            f"*Date:* {date.today()}\n"
+                            f"_Rationale: MACD bearish crossover with declining momentum._"
+                        )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent SELL alert for {ticker}")
                         if ticker_clean in active_trades:
@@ -514,10 +559,35 @@ def main():
                         
                 # Intraday Signal Transitions
                 if today_intraday_signal != prev_intraday_signal:
+                    is_idx = ticker.startswith("^") or ticker in ["NIFTY", "SENSEX"]
+                    step = 50 if is_idx else (50 if price_15m > 1000 else 10)
+                    atm_strike = int(round(price_15m / step) * step)
+                    sym_clean = ticker_clean.replace("^", "")
+                    
                     if today_intraday_signal == "BUY":
-                        target_price = price_15m * 1.01
-                        stop_loss = price_15m * 0.995
-                        msg = f"⚡ *INTRADAY BUY SIGNAL*\n\n*Ticker:* `{ticker_clean}`\n*Entry Price:* ₹{price_15m:.2f}\n*Target (+1%):* ₹{target_price:.2f}\n*Stop Loss (-0.5%):* ₹{stop_loss:.2f}\n\n_Indicators: Price is above EMA20, RSI is oversold (<40) in pullback, MACD has turned bullish, and volume is above average._"
+                        t1_pct = 0.0075 if is_idx else 0.010
+                        sl_pct = 0.0040 if is_idx else 0.005
+                        
+                        target_price = price_15m * (1 + t1_pct)
+                        stop_loss = price_15m * (1 - sl_pct)
+                        
+                        est_prem = max(10.0, price_15m * 0.008)
+                        opt_target = est_prem * 1.25
+                        opt_sl = est_prem * 0.85
+                        
+                        msg = (
+                            f"⚡ *INTRADAY BUY SIGNAL TRIGGERED*\n\n"
+                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
+                            f"*Spot Entry Price:* ₹{price_15m:.2f}\n"
+                            f"🎯 *Spot Target (+{t1_pct*100:.2f}%):* ₹{target_price:.2f}\n"
+                            f"🛑 *Spot Stop Loss (-{sl_pct*100:.2f}%):* ₹{stop_loss:.2f}\n\n"
+                            f"📊 *RECOMMENDED OPTION TRADE (CE)*\n"
+                            f"*Contract:* `{sym_clean} {atm_strike} CE`\n"
+                            f"*Est. Premium:* ₹{est_prem:.2f}\n"
+                            f"*Option Target (+25%):* ₹{opt_target:.2f}\n"
+                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n\n"
+                            f"_Rationale: Intraday 15m breakout above EMA20 with MACD momentum._"
+                        )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent Intraday BUY alert for {ticker}")
                         
@@ -528,7 +598,14 @@ def main():
                             "time": str(ist_now)
                         }
                     elif today_intraday_signal == "SELL":
-                        msg = f"⚡ *INTRADAY SELL SIGNAL*\n\n*Ticker:* `{ticker_clean}`\n*Exit Price:* ₹{price_15m:.2f}\n\n_Indicators: Price fell below EMA20, or RSI is overbought with MACD bearish crossover._"
+                        msg = (
+                            f"⚡ *INTRADAY SELL SIGNAL*\n\n"
+                            f"*Instrument:* `{stock_name} ({sym_clean})`\n"
+                            f"*Exit Spot Price:* ₹{price_15m:.2f}\n\n"
+                            f"📊 *RECOMMENDED OPTION TRADE (PE)*\n"
+                            f"*Contract:* `{sym_clean} {atm_strike} PE`\n\n"
+                            f"_Rationale: Price fell below EMA20 with bearish MACD crossover._"
+                        )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Sent Intraday SELL alert for {ticker}")
                         if ticker_clean in active_intraday_trades:

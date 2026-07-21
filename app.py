@@ -137,11 +137,14 @@ def calculate_indicators(df):
     df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
     
     def get_signal(row):
-        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['MA200']) or pd.isna(row['Vol_SMA20']):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']):
             return 'HOLD'
         
-        is_buy = (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Close'] > row['MA200']) and (row['Volume'] > row['Vol_SMA20'])
-        is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal'])
+        is_buy = (row['MACD'] > row['MACD_Signal']) and (35 <= row['RSI'] <= 65)
+        if 'MA200' in row and not pd.isna(row['MA200']):
+            is_buy = is_buy and (row['Close'] > row['MA200'] * 0.97)
+            
+        is_sell = (row['MACD'] < row['MACD_Signal']) and (row['RSI'] > 60)
         
         if is_buy:
             return 'BUY'
@@ -185,11 +188,20 @@ def calculate_intraday_indicators(df):
     df['Vol_SMA20'] = df['Volume'].rolling(20).mean()
     
     def get_signal(row):
-        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['EMA20']) or pd.isna(row['Vol_SMA20']):
+        if pd.isna(row['RSI']) or pd.isna(row['MACD']) or pd.isna(row['EMA20']):
             return 'HOLD'
         
-        is_buy = (row['Close'] > row['EMA20']) and (row['RSI'] < 40) and (row['MACD'] > row['MACD_Signal']) and (row['Volume'] > row['Vol_SMA20'])
-        is_sell = (row['RSI'] > 65) and (row['MACD'] < row['MACD_Signal']) or (row['Close'] < row['EMA20'])
+        macd_bullish = row['MACD'] > row['MACD_Signal']
+        rsi_healthy_buy = (40 <= row['RSI'] <= 68)
+        price_above_ema = (row['Close'] >= row['EMA20'])
+        
+        is_buy = macd_bullish and rsi_healthy_buy and price_above_ema
+        
+        macd_bearish = row['MACD'] < row['MACD_Signal']
+        rsi_high_sell = (row['RSI'] >= 55)
+        price_below_ema = (row['Close'] < row['EMA20'])
+        
+        is_sell = macd_bearish and rsi_high_sell and price_below_ema
         
         if is_buy:
             return 'BUY'

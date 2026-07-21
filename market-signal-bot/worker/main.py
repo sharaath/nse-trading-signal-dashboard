@@ -101,14 +101,29 @@ def run_market_scan():
         if sig in ["BUY", "SELL"] and sig != prev_sig:
             # Build message
             emoji = "🟢 BUY" if sig == "BUY" else "🔴 SELL"
-            disclaimer = "\n\n_Disclaimer: This is an algorithmically generated technical signal, not investment advice. Trade at your own risk._"
+            disclaimer = "\n\n_Disclaimer: Algorithmic technical signal. Not SEBI registered investment advice._"
+            
+            t1 = analysis.get('target1', close_price * 1.025)
+            t2 = analysis.get('target2', close_price * 1.050)
+            sl = analysis.get('stop_loss', close_price * 0.985)
+            opt_contract = analysis.get('option_contract', 'N/A')
+            opt_entry = analysis.get('option_entry', 0.0)
+            opt_target = analysis.get('option_target', 0.0)
+            opt_sl = analysis.get('option_sl', 0.0)
             
             msg = (
                 f"{emoji} *SIGNAL TRIGGERED*\n\n"
                 f"*Instrument:* `{symbol}`\n"
-                f"*Signal Price:* Rs.{close_price:.2f}\n"
+                f"*Spot Entry Price:* ₹{close_price:.2f}\n"
+                f"🎯 *Target 1:* ₹{t1:.2f}\n"
+                f"🎯 *Target 2:* ₹{t2:.2f}\n"
+                f"🛑 *Stop Loss:* ₹{sl:.2f}\n\n"
+                f"📊 *OPTION TRADE RECOMMENDATION*\n"
+                f"*Contract:* `{opt_contract}`\n"
+                f"*Est. Premium Entry:* ₹{opt_entry:.2f}\n"
+                f"*Option Target (+30%):* ₹{opt_target:.2f}\n"
+                f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n\n"
                 f"*Confidence Score:* {analysis['confidence']:.1f}%\n"
-                f"*Indicators:* {analysis['indicators']}\n"
                 f"*Reason:* {analysis['reason']}\n"
                 f"*Time:* {ist_now.strftime('%Y-%m-%d %H:%M:%S IST')}"
                 f"{disclaimer}"

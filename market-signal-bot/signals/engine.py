@@ -18,7 +18,13 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
         enabled_strategies = ["ema_crossover", "rsi", "macd", "bollinger_bands"]
         
     df = df.copy()
-    
+    if isinstance(df.columns, pd.MultiIndex):
+        df.columns = df.columns.get_level_values(0)
+    df = df.loc[:, ~df.columns.duplicated()]
+    for col in ['Open', 'High', 'Low', 'Close', 'Volume']:
+        if col in df and isinstance(df[col], pd.DataFrame):
+            df[col] = df[col].iloc[:, 0]
+            
     # 1. EMA Crossover (EMA9 / EMA21)
     df['EMA9'] = ta.trend.EMAIndicator(df['Close'], window=9).ema_indicator()
     df['EMA21'] = ta.trend.EMAIndicator(df['Close'], window=21).ema_indicator()
@@ -111,9 +117,9 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
 
     # --- Apply Accuracy Filters on BUY Signals ---
     if signal == "BUY":
-        # 1. ADX Trend Filter
+        # 1. ADX Trend Filter (Require ADX > 18 for developing trends)
         adx_val = row.get('ADX', 0)
-        # 2. Volume Expansion Filter
+        # 2. Volume Expansion Filter (Only enforced if volume data is available > 0, e.g. not index tickers like ^NSEI)
         vol_val = row.get('Volume', 0)
         vol_sma = row.get('Vol_SMA20', 0)
         # 3. Daily Trend Alignment
@@ -132,22 +138,69 @@ def calculate_consensus_signal(df: pd.DataFrame, enabled_strategies: List[str] =
                 pass
                 
         reasons_filtered = []
-        if adx_val <= 25:
-            reasons_filtered.append(f"trend strength is weak (ADX={adx_val:.1f} <= 25)")
-        if vol_val < 1.5 * vol_sma:
-            reasons_filtered.append(f"volume expansion is low (Vol={vol_val:.0f} < 1.5x average={1.5*vol_sma:.0f})")
-        if not is_above_daily_sma200:
-            reasons_filtered.append("price is below daily 200-day SMA")
+        if adx_val > 0 and adx_val < 18:
+            reasons_filtered.append(f"trend strength is very weak (ADX={adx_val:.1f} < 18)")
+        if vol_val > 0 and vol_sma > 0 and vol_val < 1.1 * vol_sma:
+            reasons_filtered.append(f"volume expansion is low (Vol={vol_val:.0f} < 1.1x average)")
             
         if reasons_filtered:
             signal = "HOLD"
             reason = f"Bullish consensus ignored due to: {', '.join(reasons_filtered)}"
             triggered = []
             confidence = 0.0
+
+    # --- Calculate Target Points, Stop Loss & Option Recommendations ---
+    close_price = float(row['Close'])
+    is_index = symbol and (symbol.startswith("^") or symbol in ["NIFTY", "BANKNIFTY", "SENSEX"])
+    
+    if is_index:
+        step = 100 if "BSESN" in str(symbol) or "SENSEX" in str(symbol) else 50
+        target1_pct, target2_pct, sl_pct = 0.015, 0.030, 0.010
+    else:
+        step = 50 if close_price > 1000 else 10
+        target1_pct, target2_pct, sl_pct = 0.025, 0.050, 0.015
         
+    atm_strike = int(round(close_price / step) * step)
+    symbol_name = symbol.replace("^", "").replace(".NS", "") if symbol else "NIFTY"
+    
+    if signal == "BUY":
+        target1 = close_price * (1 + target1_pct)
+        target2 = close_price * (1 + target2_pct)
+        stop_loss = close_price * (1 - sl_pct)
+        opt_type = "CE"
+        opt_contract = f"{symbol_name} {atm_strike} CE"
+        est_premium = max(10.0, close_price * 0.012)
+        opt_target = est_premium * 1.30
+        opt_sl = est_premium * 0.85
+    elif signal == "SELL":
+        target1 = close_price * (1 - target1_pct)
+        target2 = close_price * (1 - target2_pct)
+        stop_loss = close_price * (1 + sl_pct)
+        opt_type = "PE"
+        opt_contract = f"{symbol_name} {atm_strike} PE"
+        est_premium = max(10.0, close_price * 0.012)
+        opt_target = est_premium * 1.30
+        opt_sl = est_premium * 0.85
+    else:
+        target1 = target2 = stop_loss = close_price
+        opt_type = "NONE"
+        opt_contract = "N/A"
+        est_premium = opt_target = opt_sl = 0.0
+
     return {
         "signal": signal,
         "confidence": confidence,
         "reason": reason,
-        "indicators": ", ".join(triggered)
+        "indicators": ", ".join(triggered),
+        "price": close_price,
+        "target1": target1,
+        "target2": target2,
+        "stop_loss": stop_loss,
+        "atm_strike": atm_strike,
+        "option_type": opt_type,
+        "option_contract": opt_contract,
+        "option_entry": est_premium,
+        "option_target": opt_target,
+        "option_sl": opt_sl
     }
+

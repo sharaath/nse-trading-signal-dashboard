@@ -5,9 +5,13 @@ services:
     env: python
     buildCommand: pip install -r requirements.txt
     startCommand: uvicorn api.main:app --host 0.0.0.0 --port $PORT
+    disk:
+      name: market-signal-bot-db
+      mountPath: /data
+      sizeGB: 1
     envVars:
       - key: DATABASE_URL
-        value: "sqlite:///local_prod.db"
+        value: "sqlite:////data/local_prod.db"
       - key: TELEGRAM_BOT_TOKEN
         sync: false
       - key: PERSONAL_USE_ONLY

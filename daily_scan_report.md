@@ -1,13 +1,13 @@
-# Daily Trading Report - 2026-07-15
+# Daily Trading Report - 2026-07-16
 
 ## Scan Overview
-* **Scan Start Time**: 2026-07-15 10:37:12
-* **Scan End Time**: 2026-07-15 10:41:12
-* **Total Execution Time**: 240.32 seconds
+* **Scan Start Time**: 2026-07-16 12:19:01
+* **Scan End Time**: 2026-07-16 12:20:41
+* **Total Execution Time**: 99.67 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 49
 * **Failed Scans**: 0
-* **Average Confidence Score**: 65.5%
+* **Average Confidence Score**: 62.7%
 
 ## Signals Summary
 * **BUY Signals**: 0
@@ -20,168 +20,168 @@
 _No BUY Trades Triggered Today._
 
 ## Highest Risk Trade
-* **Ticker**: `HCLTECH` (HCL Technologies)
-* **Price**: ₹1170.80
+* **Ticker**: `ADANIENT` (Adani Enterprises)
+* **Price**: ₹3156.50
 * **Confidence**: **50.0%** (Lower score indicates higher risk)
-* **Entry**: ₹1170.80 | Stop Loss: ₹1176.65
+* **Entry**: ₹3156.50 | Stop Loss: ₹3172.28
 * **Indicators**: EMA20
 
 --- 
 
 ## Triggered Swing Signals (Daily timeframe)
 ### `APOLLOHOSP` (Apollo Hospitals) - **SELL**
-* **Price**: ₹8983.50
+* **Price**: ₹8909.50
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹8534.32 | Target 2: ₹8264.82
-* **Stop Loss**: ₹9253.01 | RRR: 1:1.67
+* **Targets**: Target 1: ₹8464.02 | Target 2: ₹8196.74
+* **Stop Loss**: ₹9176.78 | RRR: 1:1.67
+* **Reason**: RSI overbought & MACD bearish crossover
+* **Indicators**: RSI, MACD
+### `ICICIBANK` (ICICI Bank) - **SELL**
+* **Price**: ₹1412.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1341.40 | Target 2: ₹1299.04
+* **Stop Loss**: ₹1454.36 | RRR: 1:1.67
 * **Reason**: RSI overbought & MACD bearish crossover
 * **Indicators**: RSI, MACD
 
 ## Triggered Intraday Signals (15m timeframe)
 ### `ADANIENT` (Adani Enterprises) - **SELL**
-* **Price**: ₹3185.40
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹3153.55 | Target 2: ₹3137.62
-* **Stop Loss**: ₹3201.33 | RRR: 1:2.0
+* **Price**: ₹3156.50
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹3124.93 | Target 2: ₹3109.15
+* **Stop Loss**: ₹3172.28 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `BHARTIARTL` (Bharti Airtel) - **SELL**
-* **Price**: ₹1934.40
+### `ASIANPAINT` (Asian Paints) - **SELL**
+* **Price**: ₹2671.40
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1915.06 | Target 2: ₹1905.38
-* **Stop Loss**: ₹1944.07 | RRR: 1:2.0
+* **Targets**: Target 1: ₹2644.69 | Target 2: ₹2631.33
+* **Stop Loss**: ₹2684.76 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `CIPLA` (Cipla) - **SELL**
-* **Price**: ₹1440.20
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1425.80 | Target 2: ₹1418.60
-* **Stop Loss**: ₹1447.40 | RRR: 1:2.0
+### `AXISBANK` (Axis Bank) - **SELL**
+* **Price**: ₹1300.10
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹1287.10 | Target 2: ₹1280.60
+* **Stop Loss**: ₹1306.60 | RRR: 1:2.0
+* **Reason**: Price fell below EMA20 trendline
+* **Indicators**: EMA20
+### `BRITANNIA` (Britannia Industries) - **SELL**
+* **Price**: ₹5307.00
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹5253.93 | Target 2: ₹5227.39
+* **Stop Loss**: ₹5333.53 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `COALINDIA` (Coal India) - **SELL**
-* **Price**: ₹428.95
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹424.66 | Target 2: ₹422.52
-* **Stop Loss**: ₹431.09 | RRR: 1:2.0
+* **Price**: ₹428.10
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹423.82 | Target 2: ₹421.68
+* **Stop Loss**: ₹430.24 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `DRREDDY` (Dr. Reddy's Laboratories) - **SELL**
-* **Price**: ₹1234.50
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1222.15 | Target 2: ₹1215.98
-* **Stop Loss**: ₹1240.67 | RRR: 1:2.0
+* **Price**: ₹1229.20
+* **Confidence**: 65.0%
+* **Targets**: Target 1: ₹1216.91 | Target 2: ₹1210.76
+* **Stop Loss**: ₹1235.35 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `HCLTECH` (HCL Technologies) - **SELL**
-* **Price**: ₹1170.80
+### `HDFCBANK` (HDFC Bank) - **SELL**
+* **Price**: ₹812.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹803.88 | Target 2: ₹799.82
+* **Stop Loss**: ₹816.06 | RRR: 1:2.0
+* **Reason**: Price fell below EMA20 trendline
+* **Indicators**: EMA20
+### `HEROMOTOCO` (Hero MotoCorp) - **SELL**
+* **Price**: ₹4905.90
 * **Confidence**: 50.0%
-* **Targets**: Target 1: ₹1159.09 | Target 2: ₹1153.24
-* **Stop Loss**: ₹1176.65 | RRR: 1:2.0
+* **Targets**: Target 1: ₹4856.84 | Target 2: ₹4832.31
+* **Stop Loss**: ₹4930.43 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `HINDALCO` (Hindalco Industries) - **SELL**
-* **Price**: ₹963.80
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹954.16 | Target 2: ₹949.34
-* **Stop Loss**: ₹968.62 | RRR: 1:2.0
+* **Price**: ₹963.20
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹953.57 | Target 2: ₹948.75
+* **Stop Loss**: ₹968.02 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `HINDUNILVR` (Hindustan Unilever) - **SELL**
-* **Price**: ₹2105.00
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹2083.95 | Target 2: ₹2073.43
-* **Stop Loss**: ₹2115.52 | RRR: 1:2.0
+* **Price**: ₹2108.80
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹2087.71 | Target 2: ₹2077.17
+* **Stop Loss**: ₹2119.34 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `INFY` (Infosys) - **SELL**
-* **Price**: ₹1075.80
+### `ICICIBANK` (ICICI Bank) - **SELL**
+* **Price**: ₹1412.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1065.04 | Target 2: ₹1059.66
-* **Stop Loss**: ₹1081.18 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1397.88 | Target 2: ₹1390.82
+* **Stop Loss**: ₹1419.06 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `JSWSTEEL` (JSW Steel) - **SELL**
-* **Price**: ₹1243.80
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1231.36 | Target 2: ₹1225.14
-* **Stop Loss**: ₹1250.02 | RRR: 1:2.0
+* **Price**: ₹1226.00
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹1213.74 | Target 2: ₹1207.61
+* **Stop Loss**: ₹1232.13 | RRR: 1:2.0
+* **Reason**: Price fell below EMA20 trendline
+* **Indicators**: EMA20
+### `KOTAKBANK` (Kotak Mahindra Bank) - **SELL**
+* **Price**: ₹378.30
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹374.52 | Target 2: ₹372.63
+* **Stop Loss**: ₹380.19 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `LT` (Larsen & Tourbro) - **SELL**
-* **Price**: ₹3832.20
+* **Price**: ₹3773.60
 * **Confidence**: 50.0%
-* **Targets**: Target 1: ₹3793.88 | Target 2: ₹3774.72
-* **Stop Loss**: ₹3851.36 | RRR: 1:2.0
+* **Targets**: Target 1: ₹3735.86 | Target 2: ₹3717.00
+* **Stop Loss**: ₹3792.47 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `LTM` (LTIMindtree) - **SELL**
-* **Price**: ₹4062.00
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹4021.38 | Target 2: ₹4001.07
-* **Stop Loss**: ₹4082.31 | RRR: 1:2.0
-* **Reason**: Price fell below EMA20 trendline
-* **Indicators**: EMA20
-### `M&M` (Mahindra & Mahindra) - **SELL**
-* **Price**: ₹3104.50
+* **Price**: ₹4098.10
 * **Confidence**: 50.0%
-* **Targets**: Target 1: ₹3073.45 | Target 2: ₹3057.93
-* **Stop Loss**: ₹3120.02 | RRR: 1:2.0
+* **Targets**: Target 1: ₹4057.12 | Target 2: ₹4036.63
+* **Stop Loss**: ₹4118.59 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `MARUTI` (Maruti Suzuki) - **SELL**
-* **Price**: ₹13531.00
-* **Confidence**: 50.0%
-* **Targets**: Target 1: ₹13395.69 | Target 2: ₹13328.03
-* **Stop Loss**: ₹13598.65 | RRR: 1:2.0
+### `NESTLEIND` (Nestle India) - **SELL**
+* **Price**: ₹1426.80
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹1412.53 | Target 2: ₹1405.40
+* **Stop Loss**: ₹1433.93 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `NTPC` (NTPC Limited) - **SELL**
-* **Price**: ₹346.40
+### `ONGC` (Oil & Natural Gas Corp) - **SELL**
+* **Price**: ₹246.31
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹342.94 | Target 2: ₹341.20
-* **Stop Loss**: ₹348.13 | RRR: 1:2.0
+* **Targets**: Target 1: ₹243.85 | Target 2: ₹242.62
+* **Stop Loss**: ₹247.54 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `POWERGRID` (Power Grid Corp) - **SELL**
-* **Price**: ₹282.40
+### `SBILIFE` (SBI Life Insurance) - **SELL**
+* **Price**: ₹1829.90
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹279.58 | Target 2: ₹278.16
-* **Stop Loss**: ₹283.81 | RRR: 1:2.0
-* **Reason**: Price fell below EMA20 trendline
-* **Indicators**: EMA20
-### `TATACONSUM` (Tata Consumer Products) - **SELL**
-* **Price**: ₹1092.60
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1081.67 | Target 2: ₹1076.21
-* **Stop Loss**: ₹1098.06 | RRR: 1:2.0
-* **Reason**: Price fell below EMA20 trendline
-* **Indicators**: EMA20
-### `TMPV` (Tata Motors Passenger) - **SELL**
-* **Price**: ₹333.95
-* **Confidence**: 50.0%
-* **Targets**: Target 1: ₹330.61 | Target 2: ₹328.94
-* **Stop Loss**: ₹335.62 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1811.60 | Target 2: ₹1802.45
+* **Stop Loss**: ₹1839.05 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
 ### `TATASTEEL` (Tata Steel) - **SELL**
-* **Price**: ₹188.18
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹186.30 | Target 2: ₹185.36
-* **Stop Loss**: ₹189.12 | RRR: 1:2.0
+* **Price**: ₹186.08
+* **Confidence**: 50.0%
+* **Targets**: Target 1: ₹184.22 | Target 2: ₹183.29
+* **Stop Loss**: ₹187.01 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
-### `TECHM` (Tech Mahindra) - **SELL**
-* **Price**: ₹1483.50
+### `ULTRACEMCO` (UltraTech Cement) - **SELL**
+* **Price**: ₹11861.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1468.66 | Target 2: ₹1461.25
-* **Stop Loss**: ₹1490.92 | RRR: 1:2.0
-* **Reason**: Price fell below EMA20 trendline
-* **Indicators**: EMA20
-### `WIPRO` (Wipro Limited) - **SELL**
-* **Price**: ₹175.96
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹174.20 | Target 2: ₹173.32
-* **Stop Loss**: ₹176.84 | RRR: 1:2.0
+* **Targets**: Target 1: ₹11742.39 | Target 2: ₹11683.08
+* **Stop Loss**: ₹11920.30 | RRR: 1:2.0
 * **Reason**: Price fell below EMA20 trendline
 * **Indicators**: EMA20
