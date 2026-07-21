@@ -106,23 +106,30 @@ def run_market_scan():
             t1 = analysis.get('target1', close_price * 1.025)
             t2 = analysis.get('target2', close_price * 1.050)
             sl = analysis.get('stop_loss', close_price * 0.985)
+            spot_profit_t1 = abs(t1 - close_price)
+            spot_profit_t2 = abs(t2 - close_price)
+            
             opt_contract = analysis.get('option_contract', 'N/A')
             opt_entry = analysis.get('option_entry', 0.0)
             opt_target = analysis.get('option_target', 0.0)
             opt_sl = analysis.get('option_sl', 0.0)
+            opt_profit = max(0.0, opt_target - opt_entry)
+            
+            opt_profit_str = f"\n💰 *Total Est. Option Profit:* +₹{opt_profit:.2f} / contract (+30.0%)" if opt_entry > 0 else ""
             
             msg = (
                 f"{emoji} *SIGNAL TRIGGERED*\n\n"
                 f"*Instrument:* `{symbol}`\n"
                 f"*Spot Entry Price:* ₹{close_price:.2f}\n"
-                f"🎯 *Target 1:* ₹{t1:.2f}\n"
-                f"🎯 *Target 2:* ₹{t2:.2f}\n"
+                f"🎯 *Target 1:* ₹{t1:.2f} (Profit: +₹{spot_profit_t1:.2f}/share)\n"
+                f"🎯 *Target 2:* ₹{t2:.2f} (Profit: +₹{spot_profit_t2:.2f}/share)\n"
                 f"🛑 *Stop Loss:* ₹{sl:.2f}\n\n"
                 f"📊 *OPTION TRADE RECOMMENDATION*\n"
                 f"*Contract:* `{opt_contract}`\n"
                 f"*Est. Premium Entry:* ₹{opt_entry:.2f}\n"
                 f"*Option Target (+30%):* ₹{opt_target:.2f}\n"
-                f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n\n"
+                f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}"
+                f"{opt_profit_str}\n\n"
                 f"*Confidence Score:* {analysis['confidence']:.1f}%\n"
                 f"*Reason:* {analysis['reason']}\n"
                 f"*Time:* {ist_now.strftime('%Y-%m-%d %H:%M:%S IST')}"

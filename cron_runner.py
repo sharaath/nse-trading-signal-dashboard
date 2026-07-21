@@ -426,23 +426,28 @@ def main():
                         target_price2 = price * (1 + t2_pct)
                         stop_loss = price * (1 - sl_pct)
                         
+                        spot_profit1 = abs(target_price1 - price)
+                        spot_profit2 = abs(target_price2 - price)
+                        
                         est_prem = max(10.0, price * 0.012)
                         opt_target = est_prem * 1.30
                         opt_sl = est_prem * 0.85
+                        opt_profit = opt_target - est_prem
                         
                         msg = (
                             f"🟢 *SWING BUY SIGNAL TRIGGERED*\n\n"
                             f"*Instrument:* `{stock_name} ({sym_clean})`\n"
                             f"*Action:* BUY (Market Open / Live)\n"
                             f"*Spot Entry Price:* ₹{price:.2f}\n\n"
-                            f"🎯 *Spot Target 1 ({t1_pct*100:.1f}%):* ₹{target_price1:.2f}\n"
-                            f"🎯 *Spot Target 2 ({t2_pct*100:.1f}%):* ₹{target_price2:.2f}\n"
+                            f"🎯 *Spot Target 1 ({t1_pct*100:.1f}%):* ₹{target_price1:.2f} (Profit: +₹{spot_profit1:.2f}/share)\n"
+                            f"🎯 *Spot Target 2 ({t2_pct*100:.1f}%):* ₹{target_price2:.2f} (Profit: +₹{spot_profit2:.2f}/share)\n"
                             f"🛑 *Spot Stop Loss (-{sl_pct*100:.1f}%):* ₹{stop_loss:.2f}\n\n"
                             f"📊 *RECOMMENDED OPTION TRADE (CE)*\n"
                             f"*Contract:* `{sym_clean} {atm_strike} CE`\n"
-                            f"*Est. Premium:* ₹{est_prem:.2f}\n"
+                            f"*Est. Premium Entry:* ₹{est_prem:.2f}\n"
                             f"*Option Target (+30%):* ₹{opt_target:.2f}\n"
-                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n\n"
+                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n"
+                            f"💰 *Total Est. Option Profit:* +₹{opt_profit:.2f} / contract (+30.0%)\n\n"
                             f"*Date:* {date.today()}\n"
                             f"_Rationale: RSI momentum rising & MACD bullish crossover confirmation._"
                         )
@@ -456,11 +461,22 @@ def main():
                             "date": str(date.today())
                         }
                     elif today_signal == "SELL":
+                        pnl_str = ""
+                        if ticker_clean in active_trades:
+                            entry_p = float(active_trades[ticker_clean].get('entry_price', price))
+                            diff = price - entry_p
+                            pct = (diff / entry_p) * 100 if entry_p > 0 else 0
+                            if diff >= 0:
+                                pnl_str = f"💰 *Total Realized Profit:* +₹{diff:.2f} per share (+{pct:.2f}%)\n\n"
+                            else:
+                                pnl_str = f"📉 *Total Realized P&L:* -₹{abs(diff):.2f} per share ({pct:.2f}%)\n\n"
+
                         msg = (
                             f"🔴 *SWING SELL SIGNAL TRIGGERED*\n\n"
                             f"*Instrument:* `{stock_name} ({sym_clean})`\n"
                             f"*Action:* SELL / Exit Long\n"
                             f"*Exit Spot Price:* ₹{price:.2f}\n\n"
+                            f"{pnl_str}"
                             f"📊 *RECOMMENDED OPTION TRADE (PE)*\n"
                             f"*Contract:* `{sym_clean} {atm_strike} PE`\n\n"
                             f"*Date:* {date.today()}\n"
@@ -506,28 +522,30 @@ def main():
                     sl_val = float(trade_info['stop_loss'])
                     
                     if price_15m >= target_val:
-                        pct_gain = ((price_15m - trade_info['entry_price']) / trade_info['entry_price']) * 100
+                        gain_amt = price_15m - trade_info['entry_price']
+                        pct_gain = (gain_amt / trade_info['entry_price']) * 100 if trade_info['entry_price'] > 0 else 0
                         msg = (
                             f"⚡ *INTRADAY PROFIT TARGET HIT!*\n\n"
                             f"*Ticker:* `{ticker_clean}`\n"
                             f"*Current Price:* ₹{price_15m:.2f}\n"
                             f"*Entry Price:* ₹{trade_info['entry_price']:.2f}\n"
                             f"*Target Price:* ₹{target_val:.2f}\n"
-                            f"*Gain:* +{pct_gain:.1f}%\n\n"
+                            f"💰 *Total Realized Profit:* +₹{gain_amt:.2f} per share (+{pct_gain:.2f}%)\n\n"
                             f"Recommend selling now to book intraday profit! 💰"
                         )
                         send_telegram_message(token, chat_id, msg)
                         print(f"Intraday target hit alert sent for {ticker_clean}")
                         del active_intraday_trades[ticker_clean]
                     elif price_15m <= sl_val:
-                        pct_loss = ((price_15m - trade_info['entry_price']) / trade_info['entry_price']) * 100
+                        loss_amt = price_15m - trade_info['entry_price']
+                        pct_loss = (loss_amt / trade_info['entry_price']) * 100 if trade_info['entry_price'] > 0 else 0
                         msg = (
                             f"⚡ *INTRADAY STOP LOSS HIT!*\n\n"
                             f"*Ticker:* `{ticker_clean}`\n"
                             f"*Current Price:* ₹{price_15m:.2f}\n"
                             f"*Entry Price:* ₹{trade_info['entry_price']:.2f}\n"
                             f"*Stop Loss Price:* ₹{sl_val:.2f}\n"
-                            f"*Loss:* {pct_loss:.1f}%\n\n"
+                            f"📉 *Total Realized P&L:* -₹{abs(loss_amt):.2f} per share ({pct_loss:.2f}%)\n\n"
                             f"Recommend exiting intraday position immediately. 🛑"
                         )
                         send_telegram_message(token, chat_id, msg)
@@ -570,22 +588,25 @@ def main():
                         
                         target_price = price_15m * (1 + t1_pct)
                         stop_loss = price_15m * (1 - sl_pct)
+                        spot_profit = abs(target_price - price_15m)
                         
                         est_prem = max(10.0, price_15m * 0.008)
                         opt_target = est_prem * 1.25
                         opt_sl = est_prem * 0.85
+                        opt_profit = opt_target - est_prem
                         
                         msg = (
                             f"⚡ *INTRADAY BUY SIGNAL TRIGGERED*\n\n"
                             f"*Instrument:* `{stock_name} ({sym_clean})`\n"
                             f"*Spot Entry Price:* ₹{price_15m:.2f}\n"
-                            f"🎯 *Spot Target (+{t1_pct*100:.2f}%):* ₹{target_price:.2f}\n"
+                            f"🎯 *Spot Target (+{t1_pct*100:.2f}%):* ₹{target_price:.2f} (Profit: +₹{spot_profit:.2f}/share)\n"
                             f"🛑 *Spot Stop Loss (-{sl_pct*100:.2f}%):* ₹{stop_loss:.2f}\n\n"
                             f"📊 *RECOMMENDED OPTION TRADE (CE)*\n"
                             f"*Contract:* `{sym_clean} {atm_strike} CE`\n"
-                            f"*Est. Premium:* ₹{est_prem:.2f}\n"
+                            f"*Est. Premium Entry:* ₹{est_prem:.2f}\n"
                             f"*Option Target (+25%):* ₹{opt_target:.2f}\n"
-                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n\n"
+                            f"*Option Stop Loss (-15%):* ₹{opt_sl:.2f}\n"
+                            f"💰 *Total Est. Option Profit:* +₹{opt_profit:.2f} / contract (+25.0%)\n\n"
                             f"_Rationale: Intraday 15m breakout above EMA20 with MACD momentum._"
                         )
                         send_telegram_message(token, chat_id, msg)
@@ -598,10 +619,21 @@ def main():
                             "time": str(ist_now)
                         }
                     elif today_intraday_signal == "SELL":
+                        pnl_str = ""
+                        if ticker_clean in active_intraday_trades:
+                            entry_p = float(active_intraday_trades[ticker_clean].get('entry_price', price_15m))
+                            diff = price_15m - entry_p
+                            pct = (diff / entry_p) * 100 if entry_p > 0 else 0
+                            if diff >= 0:
+                                pnl_str = f"💰 *Total Realized Profit:* +₹{diff:.2f} per share (+{pct:.2f}%)\n\n"
+                            else:
+                                pnl_str = f"📉 *Total Realized P&L:* -₹{abs(diff):.2f} per share ({pct:.2f}%)\n\n"
+
                         msg = (
                             f"⚡ *INTRADAY SELL SIGNAL*\n\n"
                             f"*Instrument:* `{stock_name} ({sym_clean})`\n"
                             f"*Exit Spot Price:* ₹{price_15m:.2f}\n\n"
+                            f"{pnl_str}"
                             f"📊 *RECOMMENDED OPTION TRADE (PE)*\n"
                             f"*Contract:* `{sym_clean} {atm_strike} PE`\n\n"
                             f"_Rationale: Price fell below EMA20 with bearish MACD crossover._"
