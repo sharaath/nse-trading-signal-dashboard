@@ -20,6 +20,7 @@ HEADERS = {
 class NSEOptionChainProvider:
     def __init__(self):
         self.session: Optional[requests.Session] = None
+        self._fallback_state: Dict[str, Dict[int, Dict[str, Any]]] = {}
         self._init_session()
 
     def _init_session(self) -> bool:
@@ -74,41 +75,89 @@ class NSEOptionChainProvider:
         return self._generate_fallback_option_chain(symbol)
 
     def _generate_fallback_option_chain(self, symbol: str) -> Dict[str, Any]:
-        """Generates realistic option chain snapshot for testing and offline fallback."""
+        """Generates realistic evolving option chain snapshots for testing and offline fallback."""
         spot_price = 24200.0 if symbol == "NIFTY" else 52000.0
         step = 50 if symbol == "NIFTY" else 100
         atm_strike = int(round(spot_price / step) * step)
 
         strikes = [atm_strike + i * step for i in range(-5, 6)]
+
+        # Initialize persistent fallback state for this symbol if first poll
+        if symbol not in self._fallback_state:
+            self._fallback_state[symbol] = {}
+            for k in strikes:
+                ce_init = max(10.0, (spot_price - k) + 150.0 if spot_price > k else 150.0 * (0.8 ** ((k - spot_price)/step)))
+                pe_init = max(10.0, (k - spot_price) + 150.0 if k > spot_price else 150.0 * (0.8 ** ((spot_price - k)/step)))
+                self._fallback_state[symbol][k] = {
+                    "CE": {
+                        "lastPrice": round(ce_init, 2),
+                        "openInterest": int(random.uniform(50000, 200000)),
+                        "changeinOpenInterest": int(random.uniform(1000, 5000)),
+                        "totalTradedVolume": int(random.uniform(100000, 300000))
+                    },
+                    "PE": {
+                        "lastPrice": round(pe_init, 2),
+                        "openInterest": int(random.uniform(50000, 200000)),
+                        "changeinOpenInterest": int(random.uniform(1000, 5000)),
+                        "totalTradedVolume": int(random.uniform(100000, 300000))
+                    }
+                }
+        else:
+            # Evolve state via random walk across polls
+            # ~20% chance to force a fast-moving surge on 1 random strike/type for testing
+            should_force_surge = random.random() < 0.20
+            surge_strike = random.choice(strikes) if should_force_surge else None
+            surge_opt_type = random.choice(["CE", "PE"]) if should_force_surge else None
+
+            for k in strikes:
+                if k not in self._fallback_state[symbol]:
+                    continue
+                for opt_type in ["CE", "PE"]:
+                    curr = self._fallback_state[symbol][k][opt_type]
+                    old_price = curr["lastPrice"]
+
+                    if should_force_surge and k == surge_strike and opt_type == surge_opt_type:
+                        # Spike premium by +10% to +20% with strong positive OI surge
+                        pct = random.uniform(0.10, 0.20)
+                        new_price = max(5.0, round(old_price * (1 + pct), 2))
+                        curr["lastPrice"] = new_price
+                        curr["changeinOpenInterest"] = random.randint(5000, 15000)
+                        curr["openInterest"] += curr["changeinOpenInterest"]
+                        curr["totalTradedVolume"] += random.randint(20000, 80000)
+                    else:
+                        # Normal random drift (-3% to +4%)
+                        pct = random.uniform(-0.03, 0.04)
+                        new_price = max(5.0, round(old_price * (1 + pct), 2))
+                        curr["lastPrice"] = new_price
+                        curr["changeinOpenInterest"] = random.randint(-2000, 3000)
+                        curr["openInterest"] = max(1000, curr["openInterest"] + curr["changeinOpenInterest"])
+                        curr["totalTradedVolume"] += random.randint(1000, 5000)
+
         records_data = []
-
         for k in strikes:
-            # Call option simulation
-            ce_ltp = max(5.0, (spot_price - k) + 150.0 if spot_price > k else 150.0 * (0.8 ** ((k - spot_price)/step)))
-            pe_ltp = max(5.0, (k - spot_price) + 150.0 if k > spot_price else 150.0 * (0.8 ** ((spot_price - k)/step)))
-
+            st_state = self._fallback_state[symbol][k]
             records_data.append({
                 "strikePrice": k,
                 "CE": {
                     "strikePrice": k,
                     "underlying": spot_price,
-                    "lastPrice": round(ce_ltp, 2),
-                    "change": round(random.uniform(-5.0, 15.0), 2),
-                    "pChange": round(random.uniform(-2.0, 12.0), 2),
-                    "openInterest": int(random.uniform(50000, 200000)),
-                    "changeinOpenInterest": int(random.uniform(2000, 15000)),
-                    "totalTradedVolume": int(random.uniform(100000, 500000)),
+                    "lastPrice": st_state["CE"]["lastPrice"],
+                    "change": 1.5,
+                    "pChange": 1.2,
+                    "openInterest": st_state["CE"]["openInterest"],
+                    "changeinOpenInterest": st_state["CE"]["changeinOpenInterest"],
+                    "totalTradedVolume": st_state["CE"]["totalTradedVolume"],
                     "impliedVolatility": 14.5
                 },
                 "PE": {
                     "strikePrice": k,
                     "underlying": spot_price,
-                    "lastPrice": round(pe_ltp, 2),
-                    "change": round(random.uniform(-5.0, 15.0), 2),
-                    "pChange": round(random.uniform(-2.0, 12.0), 2),
-                    "openInterest": int(random.uniform(50000, 200000)),
-                    "changeinOpenInterest": int(random.uniform(2000, 15000)),
-                    "totalTradedVolume": int(random.uniform(100000, 500000)),
+                    "lastPrice": st_state["PE"]["lastPrice"],
+                    "change": -1.2,
+                    "pChange": -1.0,
+                    "openInterest": st_state["PE"]["openInterest"],
+                    "changeinOpenInterest": st_state["PE"]["changeinOpenInterest"],
+                    "totalTradedVolume": st_state["PE"]["totalTradedVolume"],
                     "impliedVolatility": 14.8
                 }
             })

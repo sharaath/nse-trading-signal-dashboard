@@ -79,6 +79,22 @@ def test_detect_momentum_simulated_tag():
     assert len(alerts) == 1
     assert alerts[0]["data_source"] == "simulated"
 
+def test_fallback_option_chain_variance():
+    from signals.option_chain_provider import NSEOptionChainProvider
+    provider = NSEOptionChainProvider()
+
+    snap1 = provider._generate_fallback_option_chain("NIFTY")
+    snap2 = provider._generate_fallback_option_chain("NIFTY")
+
+    assert snap1["data_source"] == "simulated"
+    assert snap2["data_source"] == "simulated"
+
+    p1 = snap1["records"]["data"][0]["CE"]["lastPrice"]
+    p2 = snap2["records"]["data"][0]["CE"]["lastPrice"]
+
+    # Verify premiums evolve and are not identical static values
+    assert p1 != p2 or snap1["records"]["data"][1]["CE"]["lastPrice"] != snap2["records"]["data"][1]["CE"]["lastPrice"]
+
 def test_detect_momentum_ignore_negative_oi_noise():
     detector = OptionMomentumDetector(min_pct_change=8.0, strikes_around_atm=3)
 
