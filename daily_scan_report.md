@@ -1,18 +1,18 @@
 # Daily Trading Report - 2026-08-11
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-11 10:13:33
-* **Scan End Time**: 2026-08-11 10:14:04
-* **Total Execution Time**: 30.43 seconds
+* **Scan Start Time**: 2026-08-11 11:08:45
+* **Scan End Time**: 2026-08-11 11:09:15
+* **Total Execution Time**: 30.10 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 74.5%
+* **Average Confidence Score**: 72.6%
 
 ## Signals Summary
-* **BUY Signals**: 32
+* **BUY Signals**: 34
 * **SELL Signals**: 1
-* **HOLD Signals**: 79
+* **HOLD Signals**: 77
 
 ---
 
@@ -190,18 +190,11 @@
 * **Stop Loss**: ₹53697.67 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `BAJFINANCE` (BAJFINANCE) - **BUY**
-* **Price**: ₹1096.90
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1107.87 | Target 2: ₹1113.35
-* **Stop Loss**: ₹1091.42 | RRR: 1:2.0
-* **Reason**: EMA20 breakout & MACD cross
-* **Indicators**: RSI, MACD, Volume, EMA20
 ### `BPCL` (BPCL) - **BUY**
-* **Price**: ₹317.05
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹320.22 | Target 2: ₹321.81
-* **Stop Loss**: ₹315.46 | RRR: 1:2.0
+* **Price**: ₹317.80
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹320.98 | Target 2: ₹322.57
+* **Stop Loss**: ₹316.21 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `CIPLA` (CIPLA) - **BUY**
@@ -212,24 +205,17 @@
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `ICICIBANK` (ICICIBANK) - **BUY**
-* **Price**: ₹1426.00
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1440.26 | Target 2: ₹1447.39
-* **Stop Loss**: ₹1418.87 | RRR: 1:2.0
+* **Price**: ₹1429.60
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1443.90 | Target 2: ₹1451.04
+* **Stop Loss**: ₹1422.45 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `KOTAKBANK` (KOTAKBANK) - **BUY**
-* **Price**: ₹392.00
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹395.92 | Target 2: ₹397.88
-* **Stop Loss**: ₹390.04 | RRR: 1:2.0
-* **Reason**: EMA20 breakout & MACD cross
-* **Indicators**: RSI, MACD, Volume, EMA20
-### `LT` (LT) - **BUY**
-* **Price**: ₹4047.50
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹4087.97 | Target 2: ₹4108.21
-* **Stop Loss**: ₹4027.26 | RRR: 1:2.0
+* **Price**: ₹392.90
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹396.83 | Target 2: ₹398.79
+* **Stop Loss**: ₹390.94 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `NTPC` (NTPC) - **BUY**
@@ -246,11 +232,18 @@
 * **Stop Loss**: ₹266.61 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `SBILIFE` (SBILIFE) - **BUY**
-* **Price**: ₹1832.30
+### `RELIANCE` (Reliance Industries) - **BUY**
+* **Price**: ₹1323.90
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1850.62 | Target 2: ₹1859.78
-* **Stop Loss**: ₹1823.14 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1337.14 | Target 2: ₹1343.76
+* **Stop Loss**: ₹1317.28 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `SBILIFE` (SBILIFE) - **BUY**
+* **Price**: ₹1837.60
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹1855.98 | Target 2: ₹1865.16
+* **Stop Loss**: ₹1828.41 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `SUNPHARMA` (SUNPHARMA) - **BUY**
@@ -261,9 +254,30 @@
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `TMPV` (TMPV) - **BUY**
-* **Price**: ₹347.20
+* **Price**: ₹347.60
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹351.08 | Target 2: ₹352.81
+* **Stop Loss**: ₹345.86 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `TATASTEEL` (TATASTEEL) - **BUY**
+* **Price**: ₹188.25
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹190.13 | Target 2: ₹191.07
+* **Stop Loss**: ₹187.31 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `TCS` (Tata Consultancy Services) - **BUY**
+* **Price**: ₹2445.70
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹350.67 | Target 2: ₹352.41
-* **Stop Loss**: ₹345.46 | RRR: 1:2.0
+* **Targets**: Target 1: ₹2470.16 | Target 2: ₹2482.39
+* **Stop Loss**: ₹2433.47 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `WIPRO` (WIPRO) - **BUY**
+* **Price**: ₹184.60
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹186.45 | Target 2: ₹187.37
+* **Stop Loss**: ₹183.68 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
