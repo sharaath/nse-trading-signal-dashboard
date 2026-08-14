@@ -1,28 +1,28 @@
 # Daily Trading Report - 2026-08-14
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-14 05:42:35
-* **Scan End Time**: 2026-08-14 05:43:07
-* **Total Execution Time**: 31.58 seconds
+* **Scan Start Time**: 2026-08-14 07:00:17
+* **Scan End Time**: 2026-08-14 07:00:45
+* **Total Execution Time**: 27.67 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 71.3%
+* **Average Confidence Score**: 70.0%
 
 ## Signals Summary
-* **BUY Signals**: 21
-* **SELL Signals**: 2
-* **HOLD Signals**: 89
+* **BUY Signals**: 29
+* **SELL Signals**: 3
+* **HOLD Signals**: 80
 
 ---
 
 ## Best Opportunity of the Day
-* **Ticker**: `BAJAJ-AUTO` (BAJAJ-AUTO)
-* **Price**: ₹11719.00
-* **Confidence**: **85.0%**
-* **Entry**: ₹11719.00 | Stop Loss: ₹11660.41
-* **Target 1**: ₹11836.19 | Target 2: ₹11894.78
-* **Indicators**: RSI, MACD, Volume, EMA20
+* **Ticker**: `^DJI` (Dow Jones (DJIA))
+* **Price**: ₹53839.99
+* **Confidence**: **70.0%**
+* **Entry**: ₹53839.99 | Stop Loss: ₹52224.79
+* **Target 1**: ₹56531.99 | Target 2: ₹58147.19
+* **Indicators**: RSI, MACD, Volume, MA200
 
 ## Highest Risk Trade
 * **Ticker**: `^DJI` (Dow Jones (DJIA))
@@ -49,91 +49,105 @@
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `CIPLA` (CIPLA) - **BUY**
-* **Price**: ₹1458.70
+* **Price**: ₹1455.60
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1531.63 | Target 2: ₹1575.40
-* **Stop Loss**: ₹1414.94 | RRR: 1:1.67
+* **Targets**: Target 1: ₹1528.38 | Target 2: ₹1572.05
+* **Stop Loss**: ₹1411.93 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `COALINDIA` (Coal India) - **BUY**
-* **Price**: ₹406.95
+* **Price**: ₹406.70
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹427.30 | Target 2: ₹439.51
-* **Stop Loss**: ₹394.74 | RRR: 1:1.67
+* **Targets**: Target 1: ₹427.04 | Target 2: ₹439.24
+* **Stop Loss**: ₹394.50 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `GRASIM` (GRASIM) - **BUY**
-* **Price**: ₹3222.40
+* **Price**: ₹3237.60
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹3383.52 | Target 2: ₹3480.19
-* **Stop Loss**: ₹3125.73 | RRR: 1:1.67
+* **Targets**: Target 1: ₹3399.48 | Target 2: ₹3496.61
+* **Stop Loss**: ₹3140.47 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `HINDALCO` (HINDALCO) - **BUY**
-* **Price**: ₹1024.65
+* **Price**: ₹1031.75
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1075.88 | Target 2: ₹1106.62
-* **Stop Loss**: ₹993.91 | RRR: 1:1.67
+* **Targets**: Target 1: ₹1083.34 | Target 2: ₹1114.29
+* **Stop Loss**: ₹1000.80 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `KOTAKBANK` (KOTAKBANK) - **BUY**
-* **Price**: ₹391.25
+* **Price**: ₹392.50
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹410.81 | Target 2: ₹422.55
-* **Stop Loss**: ₹379.51 | RRR: 1:1.67
+* **Targets**: Target 1: ₹412.12 | Target 2: ₹423.90
+* **Stop Loss**: ₹380.72 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `LT` (LT) - **BUY**
-* **Price**: ₹4034.00
+* **Price**: ₹4047.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹4235.70 | Target 2: ₹4356.72
-* **Stop Loss**: ₹3912.98 | RRR: 1:1.67
+* **Targets**: Target 1: ₹4249.35 | Target 2: ₹4370.76
+* **Stop Loss**: ₹3925.59 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `M&M` (M&M) - **BUY**
-* **Price**: ₹3400.80
+* **Price**: ₹3406.80
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹3570.84 | Target 2: ₹3672.86
-* **Stop Loss**: ₹3298.78 | RRR: 1:1.67
+* **Targets**: Target 1: ₹3577.14 | Target 2: ₹3679.34
+* **Stop Loss**: ₹3304.60 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `SBIN` (SBIN) - **BUY**
-* **Price**: ₹1068.60
+* **Price**: ₹1070.10
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1122.03 | Target 2: ₹1154.09
-* **Stop Loss**: ₹1036.54 | RRR: 1:1.67
+* **Targets**: Target 1: ₹1123.60 | Target 2: ₹1155.71
+* **Stop Loss**: ₹1038.00 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `TMPV` (TMPV) - **BUY**
-* **Price**: ₹332.45
+* **Price**: ₹332.20
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹349.07 | Target 2: ₹359.05
-* **Stop Loss**: ₹322.48 | RRR: 1:1.67
+* **Targets**: Target 1: ₹348.81 | Target 2: ₹358.78
+* **Stop Loss**: ₹322.23 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `TATASTEEL` (TATASTEEL) - **BUY**
-* **Price**: ₹181.79
+* **Price**: ₹182.49
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹190.88 | Target 2: ₹196.33
-* **Stop Loss**: ₹176.34 | RRR: 1:1.67
+* **Targets**: Target 1: ₹191.61 | Target 2: ₹197.09
+* **Stop Loss**: ₹177.02 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
-### `HCLTECH` (HCLTECH) - **SELL**
-* **Price**: ₹1353.20
+### `BAJAJ-AUTO` (BAJAJ-AUTO) - **SELL**
+* **Price**: ₹11746.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1285.54 | Target 2: ₹1244.94
-* **Stop Loss**: ₹1393.80 | RRR: 1:1.67
+* **Targets**: Target 1: ₹11158.70 | Target 2: ₹10806.32
+* **Stop Loss**: ₹12098.38 | RRR: 1:1.67
+* **Reason**: RSI overbought & MACD bearish crossover
+* **Indicators**: RSI, MACD
+### `HCLTECH` (HCLTECH) - **SELL**
+* **Price**: ₹1364.10
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1295.89 | Target 2: ₹1254.97
+* **Stop Loss**: ₹1405.02 | RRR: 1:1.67
 * **Reason**: RSI overbought & MACD bearish crossover
 * **Indicators**: RSI, MACD
 ### `TECHM` (TECHM) - **SELL**
-* **Price**: ₹1617.50
+* **Price**: ₹1617.70
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1536.62 | Target 2: ₹1488.10
-* **Stop Loss**: ₹1666.03 | RRR: 1:1.67
+* **Targets**: Target 1: ₹1536.81 | Target 2: ₹1488.28
+* **Stop Loss**: ₹1666.23 | RRR: 1:1.67
 * **Reason**: RSI overbought & MACD bearish crossover
 * **Indicators**: RSI, MACD
 
 ## Triggered Intraday Signals (15m timeframe)
+### `^NSEI` (NIFTY 50) - **BUY**
+* **Price**: ₹24346.80
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹24590.27 | Target 2: ₹24712.00
+* **Stop Loss**: ₹24225.07 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
 ### `^DJI` (Dow Jones (DJIA)) - **BUY**
 * **Price**: ₹53834.58
 * **Confidence**: 70.0%
@@ -142,58 +156,107 @@
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `ADANIENT` (Adani Enterprises) - **BUY**
-* **Price**: ₹2995.70
+* **Price**: ₹3014.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹3025.66 | Target 2: ₹3040.64
-* **Stop Loss**: ₹2980.72 | RRR: 1:2.0
+* **Targets**: Target 1: ₹3044.14 | Target 2: ₹3059.21
+* **Stop Loss**: ₹2998.93 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `APOLLOHOSP` (APOLLOHOSP) - **BUY**
+* **Price**: ₹8823.50
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹8911.74 | Target 2: ₹8955.85
+* **Stop Loss**: ₹8779.38 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `AXISBANK` (AXISBANK) - **BUY**
+* **Price**: ₹1214.20
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1226.34 | Target 2: ₹1232.41
+* **Stop Loss**: ₹1208.13 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `BAJAJ-AUTO` (BAJAJ-AUTO) - **BUY**
-* **Price**: ₹11719.00
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹11836.19 | Target 2: ₹11894.78
-* **Stop Loss**: ₹11660.41 | RRR: 1:2.0
+* **Price**: ₹11746.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹11863.46 | Target 2: ₹11922.19
+* **Stop Loss**: ₹11687.27 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `BPCL` (BPCL) - **BUY**
-* **Price**: ₹317.40
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹320.57 | Target 2: ₹322.16
-* **Stop Loss**: ₹315.81 | RRR: 1:2.0
+* **Price**: ₹318.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹321.18 | Target 2: ₹322.77
+* **Stop Loss**: ₹316.41 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `DIVISLAB` (DIVISLAB) - **BUY**
-* **Price**: ₹8516.50
+* **Price**: ₹8518.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹8601.67 | Target 2: ₹8644.25
-* **Stop Loss**: ₹8473.92 | RRR: 1:2.0
+* **Targets**: Target 1: ₹8603.18 | Target 2: ₹8645.77
+* **Stop Loss**: ₹8475.41 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `EICHERMOT` (EICHERMOT) - **BUY**
-* **Price**: ₹8099.50
+### `HCLTECH` (HCLTECH) - **BUY**
+* **Price**: ₹1364.10
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹8180.49 | Target 2: ₹8220.99
-* **Stop Loss**: ₹8059.00 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1377.74 | Target 2: ₹1384.56
+* **Stop Loss**: ₹1357.28 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `HDFCBANK` (HDFC Bank) - **BUY**
-* **Price**: ₹726.60
+### `HDFCLIFE` (HDFCLIFE) - **BUY**
+* **Price**: ₹539.45
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹733.87 | Target 2: ₹737.50
-* **Stop Loss**: ₹722.97 | RRR: 1:2.0
+* **Targets**: Target 1: ₹544.84 | Target 2: ₹547.54
+* **Stop Loss**: ₹536.75 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `ITC` (ITC) - **BUY**
-* **Price**: ₹277.95
+### `INFY` (Infosys) - **BUY**
+* **Price**: ₹1169.00
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹280.73 | Target 2: ₹282.12
-* **Stop Loss**: ₹276.56 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1180.69 | Target 2: ₹1186.53
+* **Stop Loss**: ₹1163.15 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `M&M` (M&M) - **BUY**
+* **Price**: ₹3406.80
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹3440.87 | Target 2: ₹3457.90
+* **Stop Loss**: ₹3389.77 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `MARUTI` (MARUTI) - **BUY**
+* **Price**: ₹13911.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹14050.11 | Target 2: ₹14119.66
+* **Stop Loss**: ₹13841.44 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `NESTLEIND` (NESTLEIND) - **BUY**
+* **Price**: ₹1512.60
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1527.73 | Target 2: ₹1535.29
+* **Stop Loss**: ₹1505.04 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `POWERGRID` (POWERGRID) - **BUY**
+* **Price**: ₹267.05
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹269.72 | Target 2: ₹271.06
+* **Stop Loss**: ₹265.71 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `TITAN` (TITAN) - **BUY**
-* **Price**: ₹5074.30
+* **Price**: ₹5078.10
 * **Confidence**: 70.0%
-* **Targets**: Target 1: ₹5125.04 | Target 2: ₹5150.41
-* **Stop Loss**: ₹5048.93 | RRR: 1:2.0
+* **Targets**: Target 1: ₹5128.88 | Target 2: ₹5154.27
+* **Stop Loss**: ₹5052.71 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `WIPRO` (WIPRO) - **BUY**
+* **Price**: ₹184.64
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹186.49 | Target 2: ₹187.41
+* **Stop Loss**: ₹183.72 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
