@@ -1,18 +1,18 @@
 # Daily Trading Report - 2026-08-17
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-17 10:44:31
-* **Scan End Time**: 2026-08-17 10:44:58
-* **Total Execution Time**: 27.19 seconds
+* **Scan Start Time**: 2026-08-17 11:11:48
+* **Scan End Time**: 2026-08-17 11:12:13
+* **Total Execution Time**: 25.10 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 73.6%
+* **Average Confidence Score**: 73.8%
 
 ## Signals Summary
-* **BUY Signals**: 23
+* **BUY Signals**: 22
 * **SELL Signals**: 2
-* **HOLD Signals**: 87
+* **HOLD Signals**: 88
 
 ---
 
@@ -102,13 +102,6 @@
 * **Confidence**: 70.0%
 * **Targets**: Target 1: ₹1114.26 | Target 2: ₹1146.10
 * **Stop Loss**: ₹1029.36 | RRR: 1:1.67
-* **Reason**: RSI oversold & MACD bullish crossover
-* **Indicators**: RSI, MACD, Volume, MA200
-### `TATASTEEL` (TATASTEEL) - **BUY**
-* **Price**: ₹186.00
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹195.30 | Target 2: ₹200.88
-* **Stop Loss**: ₹180.42 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `BAJAJ-AUTO` (BAJAJ-AUTO) - **SELL**
