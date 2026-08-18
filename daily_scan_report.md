@@ -1,18 +1,18 @@
 # Daily Trading Report - 2026-08-18
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-18 10:11:03
-* **Scan End Time**: 2026-08-18 10:11:31
-* **Total Execution Time**: 27.56 seconds
+* **Scan Start Time**: 2026-08-18 10:49:11
+* **Scan End Time**: 2026-08-18 10:49:33
+* **Total Execution Time**: 22.38 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 76.6%
+* **Average Confidence Score**: 75.8%
 
 ## Signals Summary
-* **BUY Signals**: 12
+* **BUY Signals**: 14
 * **SELL Signals**: 4
-* **HOLD Signals**: 96
+* **HOLD Signals**: 94
 
 ---
 
@@ -46,13 +46,6 @@
 * **Confidence**: 70.0%
 * **Targets**: Target 1: ₹31548.45 | Target 2: ₹32449.83
 * **Stop Loss**: ₹29144.76 | RRR: 1:1.67
-* **Reason**: RSI oversold & MACD bullish crossover
-* **Indicators**: RSI, MACD, Volume, MA200
-### `ADANIPORTS` (ADANIPORTS) - **BUY**
-* **Price**: ₹1682.40
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1766.52 | Target 2: ₹1816.99
-* **Stop Loss**: ₹1631.93 | RRR: 1:1.67
 * **Reason**: RSI oversold & MACD bullish crossover
 * **Indicators**: RSI, MACD, Volume, MA200
 ### `GRASIM` (GRASIM) - **BUY**
@@ -107,44 +100,65 @@
 
 ## Triggered Intraday Signals (15m timeframe)
 ### `ADANIPORTS` (ADANIPORTS) - **BUY**
-* **Price**: ₹1685.70
+* **Price**: ₹1682.40
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1702.56 | Target 2: ₹1710.99
-* **Stop Loss**: ₹1677.27 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1699.22 | Target 2: ₹1707.64
+* **Stop Loss**: ₹1673.99 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `AXISBANK` (AXISBANK) - **BUY**
-* **Price**: ₹1246.10
+* **Price**: ₹1243.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1255.43 | Target 2: ₹1261.64
+* **Stop Loss**: ₹1236.79 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `BAJAJFINSV` (BAJAJFINSV) - **BUY**
+* **Price**: ₹2011.20
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1258.56 | Target 2: ₹1264.79
-* **Stop Loss**: ₹1239.87 | RRR: 1:2.0
+* **Targets**: Target 1: ₹2031.31 | Target 2: ₹2041.37
+* **Stop Loss**: ₹2001.14 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `HEROMOTOCO` (HEROMOTOCO) - **BUY**
+* **Price**: ₹5745.50
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹5802.95 | Target 2: ₹5831.68
+* **Stop Loss**: ₹5716.77 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `ICICIBANK` (ICICIBANK) - **BUY**
-* **Price**: ₹1412.10
+* **Price**: ₹1412.00
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1426.22 | Target 2: ₹1433.28
-* **Stop Loss**: ₹1405.04 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1426.12 | Target 2: ₹1433.18
+* **Stop Loss**: ₹1404.94 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `INDUSINDBK` (INDUSINDBK) - **BUY**
+* **Price**: ₹1015.00
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹1025.15 | Target 2: ₹1030.22
+* **Stop Loss**: ₹1009.92 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `POWERGRID` (POWERGRID) - **BUY**
-* **Price**: ₹267.70
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹270.38 | Target 2: ₹271.72
-* **Stop Loss**: ₹266.36 | RRR: 1:2.0
+* **Price**: ₹268.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹270.68 | Target 2: ₹272.02
+* **Stop Loss**: ₹266.66 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `SUNPHARMA` (SUNPHARMA) - **BUY**
-* **Price**: ₹1884.50
+### `TATASTEEL` (TATASTEEL) - **BUY**
+* **Price**: ₹185.50
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1903.35 | Target 2: ₹1912.77
-* **Stop Loss**: ₹1875.08 | RRR: 1:2.0
+* **Targets**: Target 1: ₹187.35 | Target 2: ₹188.28
+* **Stop Loss**: ₹184.57 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `TECHM` (TECHM) - **BUY**
-* **Price**: ₹1590.00
+* **Price**: ₹1592.00
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1605.90 | Target 2: ₹1613.85
-* **Stop Loss**: ₹1582.05 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1607.92 | Target 2: ₹1615.88
+* **Stop Loss**: ₹1584.04 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
