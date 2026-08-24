@@ -1,18 +1,18 @@
 # Daily Trading Report - 2026-08-24
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-24 10:19:29
-* **Scan End Time**: 2026-08-24 10:20:07
-* **Total Execution Time**: 37.72 seconds
+* **Scan Start Time**: 2026-08-24 11:03:49
+* **Scan End Time**: 2026-08-24 11:04:11
+* **Total Execution Time**: 22.56 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 77.1%
+* **Average Confidence Score**: 75.7%
 
 ## Signals Summary
-* **BUY Signals**: 29
+* **BUY Signals**: 32
 * **SELL Signals**: 5
-* **HOLD Signals**: 78
+* **HOLD Signals**: 75
 
 ---
 
@@ -163,10 +163,10 @@
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `CIPLA` (CIPLA) - **BUY**
-* **Price**: ₹1435.20
+* **Price**: ₹1437.90
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1449.55 | Target 2: ₹1456.73
-* **Stop Loss**: ₹1428.02 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1452.28 | Target 2: ₹1459.47
+* **Stop Loss**: ₹1430.71 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `DRREDDY` (DRREDDY) - **BUY**
@@ -183,11 +183,18 @@
 * **Stop Loss**: ₹3271.56 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `HDFCBANK` (HDFC Bank) - **BUY**
-* **Price**: ₹727.35
+### `HCLTECH` (HCLTECH) - **BUY**
+* **Price**: ₹1322.00
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹734.62 | Target 2: ₹738.26
-* **Stop Loss**: ₹723.71 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1335.22 | Target 2: ₹1341.83
+* **Stop Loss**: ₹1315.39 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `HDFCBANK` (HDFC Bank) - **BUY**
+* **Price**: ₹729.00
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹736.29 | Target 2: ₹739.93
+* **Stop Loss**: ₹725.36 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `ICICIBANK` (ICICIBANK) - **BUY**
@@ -198,10 +205,10 @@
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `INDUSINDBK` (INDUSINDBK) - **BUY**
-* **Price**: ₹1016.10
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1026.26 | Target 2: ₹1031.34
-* **Stop Loss**: ₹1011.02 | RRR: 1:2.0
+* **Price**: ₹1018.40
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1028.58 | Target 2: ₹1033.68
+* **Stop Loss**: ₹1013.31 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `ITC` (ITC) - **BUY**
@@ -253,18 +260,32 @@
 * **Stop Loss**: ₹337.80 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `POWERGRID` (POWERGRID) - **BUY**
-* **Price**: ₹271.00
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹273.71 | Target 2: ₹275.06
-* **Stop Loss**: ₹269.64 | RRR: 1:2.0
+### `ONGC` (ONGC) - **BUY**
+* **Price**: ₹236.55
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹238.92 | Target 2: ₹240.10
+* **Stop Loss**: ₹235.37 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `TATACONSUM` (TATACONSUM) - **BUY**
-* **Price**: ₹1057.70
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1068.28 | Target 2: ₹1073.57
-* **Stop Loss**: ₹1052.41 | RRR: 1:2.0
+### `POWERGRID` (POWERGRID) - **BUY**
+* **Price**: ₹271.40
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹274.11 | Target 2: ₹275.47
+* **Stop Loss**: ₹270.04 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `RELIANCE` (Reliance Industries) - **BUY**
+* **Price**: ₹1309.80
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1322.90 | Target 2: ₹1329.45
+* **Stop Loss**: ₹1303.25 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `SBIN` (SBIN) - **BUY**
+* **Price**: ₹1039.50
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1049.89 | Target 2: ₹1055.09
+* **Stop Loss**: ₹1034.30 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `TITAN` (TITAN) - **BUY**
