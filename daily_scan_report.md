@@ -1,13 +1,13 @@
 # Daily Trading Report - 2026-08-26
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-26 10:08:19
-* **Scan End Time**: 2026-08-26 10:08:59
-* **Total Execution Time**: 39.47 seconds
+* **Scan Start Time**: 2026-08-26 10:53:19
+* **Scan End Time**: 2026-08-26 10:53:57
+* **Total Execution Time**: 38.38 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 79.4%
+* **Average Confidence Score**: 75.6%
 
 ## Signals Summary
 * **BUY Signals**: 13
@@ -107,44 +107,44 @@
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `GRASIM` (GRASIM) - **BUY**
-* **Price**: ₹3307.00
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹3340.07 | Target 2: ₹3356.60
-* **Stop Loss**: ₹3290.47 | RRR: 1:2.0
+* **Price**: ₹3299.90
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹3332.90 | Target 2: ₹3349.40
+* **Stop Loss**: ₹3283.40 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `LTM` (LTM) - **BUY**
-* **Price**: ₹4508.80
+### `HINDALCO` (HINDALCO) - **BUY**
+* **Price**: ₹1053.00
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹4553.89 | Target 2: ₹4576.43
-* **Stop Loss**: ₹4486.26 | RRR: 1:2.0
+* **Targets**: Target 1: ₹1063.53 | Target 2: ₹1068.79
+* **Stop Loss**: ₹1047.73 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `NESTLEIND` (NESTLEIND) - **BUY**
-* **Price**: ₹1456.90
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1471.47 | Target 2: ₹1478.75
-* **Stop Loss**: ₹1449.62 | RRR: 1:2.0
-* **Reason**: EMA20 breakout & MACD cross
-* **Indicators**: RSI, MACD, Volume, EMA20
-### `ONGC` (ONGC) - **BUY**
-* **Price**: ₹233.44
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹235.77 | Target 2: ₹236.94
-* **Stop Loss**: ₹232.27 | RRR: 1:2.0
+### `INDUSINDBK` (INDUSINDBK) - **BUY**
+* **Price**: ₹1004.00
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1014.04 | Target 2: ₹1019.06
+* **Stop Loss**: ₹998.98 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
 ### `TATACONSUM` (TATACONSUM) - **BUY**
-* **Price**: ₹1047.50
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹1057.97 | Target 2: ₹1063.21
-* **Stop Loss**: ₹1042.26 | RRR: 1:2.0
+* **Price**: ₹1047.10
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹1057.57 | Target 2: ₹1062.81
+* **Stop Loss**: ₹1041.86 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `TITAN` (TITAN) - **BUY**
-* **Price**: ₹5111.00
+### `TATASTEEL` (TATASTEEL) - **BUY**
+* **Price**: ₹188.01
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹189.89 | Target 2: ₹190.83
+* **Stop Loss**: ₹187.07 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `ULTRACEMCO` (ULTRACEMCO) - **BUY**
+* **Price**: ₹11717.00
 * **Confidence**: 85.0%
-* **Targets**: Target 1: ₹5162.11 | Target 2: ₹5187.66
-* **Stop Loss**: ₹5085.44 | RRR: 1:2.0
+* **Targets**: Target 1: ₹11834.17 | Target 2: ₹11892.75
+* **Stop Loss**: ₹11658.41 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
