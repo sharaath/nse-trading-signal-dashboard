@@ -1,18 +1,18 @@
 # Daily Trading Report - 2026-08-31
 
 ## Scan Overview
-* **Scan Start Time**: 2026-08-31 10:44:55
-* **Scan End Time**: 2026-08-31 10:45:20
-* **Total Execution Time**: 25.44 seconds
+* **Scan Start Time**: 2026-08-31 17:44:52
+* **Scan End Time**: 2026-08-31 17:45:21
+* **Total Execution Time**: 29.74 seconds
 * **Market Scanned**: Nifty 50
 * **Total Stocks Scanned**: 56
 * **Failed Scans**: 0
-* **Average Confidence Score**: 76.8%
+* **Average Confidence Score**: 77.1%
 
 ## Signals Summary
-* **BUY Signals**: 20
+* **BUY Signals**: 19
 * **SELL Signals**: 2
-* **HOLD Signals**: 90
+* **HOLD Signals**: 91
 
 ---
 
@@ -134,6 +134,20 @@
 * **Stop Loss**: ₹76572.49 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
+### `^NDX` (Nasdaq 100) - **BUY**
+* **Price**: ₹29386.79
+* **Confidence**: 70.0%
+* **Targets**: Target 1: ₹29680.66 | Target 2: ₹29827.59
+* **Stop Loss**: ₹29239.86 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
+### `APOLLOHOSP` (APOLLOHOSP) - **BUY**
+* **Price**: ₹8898.50
+* **Confidence**: 85.0%
+* **Targets**: Target 1: ₹8987.49 | Target 2: ₹9031.98
+* **Stop Loss**: ₹8854.01 | RRR: 1:2.0
+* **Reason**: EMA20 breakout & MACD cross
+* **Indicators**: RSI, MACD, Volume, EMA20
 ### `COALINDIA` (Coal India) - **BUY**
 * **Price**: ₹401.75
 * **Confidence**: 85.0%
@@ -155,20 +169,6 @@
 * **Stop Loss**: ₹325.76 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
-### `SUNPHARMA` (SUNPHARMA) - **BUY**
-* **Price**: ₹1925.00
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1944.25 | Target 2: ₹1953.87
-* **Stop Loss**: ₹1915.38 | RRR: 1:2.0
-* **Reason**: EMA20 breakout & MACD cross
-* **Indicators**: RSI, MACD, Volume, EMA20
-### `TATACONSUM` (TATACONSUM) - **BUY**
-* **Price**: ₹1041.60
-* **Confidence**: 70.0%
-* **Targets**: Target 1: ₹1052.02 | Target 2: ₹1057.22
-* **Stop Loss**: ₹1036.39 | RRR: 1:2.0
-* **Reason**: EMA20 breakout & MACD cross
-* **Indicators**: RSI, MACD, Volume, EMA20
 ### `TATASTEEL` (TATASTEEL) - **BUY**
 * **Price**: ₹184.35
 * **Confidence**: 85.0%
@@ -181,12 +181,5 @@
 * **Confidence**: 85.0%
 * **Targets**: Target 1: ₹1644.28 | Target 2: ₹1652.42
 * **Stop Loss**: ₹1619.86 | RRR: 1:2.0
-* **Reason**: EMA20 breakout & MACD cross
-* **Indicators**: RSI, MACD, Volume, EMA20
-### `ULTRACEMCO` (ULTRACEMCO) - **BUY**
-* **Price**: ₹11500.00
-* **Confidence**: 85.0%
-* **Targets**: Target 1: ₹11615.00 | Target 2: ₹11672.50
-* **Stop Loss**: ₹11442.50 | RRR: 1:2.0
 * **Reason**: EMA20 breakout & MACD cross
 * **Indicators**: RSI, MACD, Volume, EMA20
