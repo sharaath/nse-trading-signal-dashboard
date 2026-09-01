@@ -2,6 +2,7 @@ import os
 import math
 import logging
 from datetime import datetime, timezone, timedelta
+from zoneinfo import ZoneInfo
 from sqlalchemy.orm import Session
 
 from db.database import SessionLocal
@@ -14,6 +15,7 @@ logger = logging.getLogger(__name__)
 # Singletons for continuous worker scanning
 chain_provider = NSEOptionChainProvider()
 momentum_detector = OptionMomentumDetector(min_pct_change=8.0, strikes_around_atm=3)
+IST = ZoneInfo("Asia/Kolkata")
 
 def send_telegram_alert(message: str, chat_id: str):
     token = os.environ.get("TELEGRAM_BOT_TOKEN")
@@ -33,7 +35,7 @@ def send_telegram_alert(message: str, chat_id: str):
 
 def run_option_momentum_scan():
     utc_now = datetime.now(timezone.utc)
-    ist_now = utc_now + timedelta(hours=5, minutes=30)
+    ist_now = utc_now.astimezone(IST)
 
     # Check weekday (Mon-Fri)
     if ist_now.weekday() >= 5:
@@ -79,14 +81,15 @@ def run_option_momentum_scan():
 
                 logger.info(f"FAST OPTION MOVE ({alert.get('data_source')}): {alert['contract']} | Premium: ₹{alert['old_premium']:.2f} -> ₹{alert['new_premium']:.2f} (+{alert['pct_change']}%)")
 
-                # Dispatch Telegram alert
-                if chat_id:
+                is_simulated = alert.get("data_source") == "simulated"
+
+                # Dispatch Telegram alert only for live market data sources
+                if chat_id and not is_simulated:
                     sig_time_str = ist_now.strftime("%H:%M:%S IST")
                     sym_clean = "NIFTY 50" if alert["symbol"] == "NIFTY" else "BANKNIFTY"
                     opt_emoji = "🟢 CE (Bullish Surge)" if alert["option_type"] == "CE" else "🔴 PE (Bearish Surge)"
 
-                    is_simulated = alert.get("data_source") == "simulated"
-                    header = "⚠️ *SIMULATED DATA — NOT A REAL SIGNAL*" if is_simulated else "⚡ *FAST OPTION MOVE DETECTED*"
+                    header = "⚡ *FAST OPTION MOVE DETECTED*"
 
                     msg = (
                         f"{header}\n\n"

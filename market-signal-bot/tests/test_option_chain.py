@@ -1,3 +1,6 @@
+import os
+os.environ["SYSTEM_MODE"] = "SIMULATION"
+
 import pytest
 from signals.option_chain_provider import NSEOptionChainProvider
 from db.instruments import get_instrument_metadata

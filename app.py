@@ -4,21 +4,28 @@ import pandas as pd
 import plotly.graph_objects as go
 import ta
 from datetime import date, timedelta, datetime, timezone
+from zoneinfo import ZoneInfo
 import urllib.request
 import urllib.parse
 import json
+import math
 import os
 import sys
 
+IST = ZoneInfo("Asia/Kolkata")
 # Ensure market-signal-bot modules are importable
-sys.path.append(os.path.join(os.path.dirname(__file__), "market-signal-bot"))
-from db.instruments import INSTRUMENTS_REGISTRY, get_instrument_metadata, get_grouped_instruments
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "market-signal-bot"))
+try:
+    from db.instruments import INSTRUMENTS_REGISTRY, get_instrument_metadata, get_grouped_instruments
+except ImportError:
+    from market_signal_bot.db.instruments import INSTRUMENTS_REGISTRY, get_instrument_metadata, get_grouped_instruments
 
 def get_ticker_name(ticker: str) -> str:
     meta = get_instrument_metadata(ticker)
     return meta.get("name", ticker.replace("^", "").replace(".NS", ""))
 
 CACHE_FILE = "last_signals.json"
+INTRADAY_CACHE_FILE = "last_intraday_signals.json"
 
 def send_telegram_message(token, chat_id, message):
     url = f"https://api.telegram.org/bot{token}/sendMessage"
@@ -42,6 +49,22 @@ def get_last_signals():
 def save_current_signals(signals_dict):
     try:
         with open(CACHE_FILE, "w") as f:
+            json.dump(signals_dict, f)
+    except Exception:
+        pass
+
+def get_last_intraday_signals():
+    if os.path.exists(INTRADAY_CACHE_FILE):
+        try:
+            with open(INTRADAY_CACHE_FILE, "r") as f:
+                return json.load(f)
+        except Exception:
+            return {}
+    return {}
+
+def save_current_intraday_signals(signals_dict):
+    try:
+        with open(INTRADAY_CACHE_FILE, "w") as f:
             json.dump(signals_dict, f)
     except Exception:
         pass
@@ -89,7 +112,7 @@ def get_completed_signal_row(df):
         return df.iloc[-1]
         
     utc_now = datetime.now(timezone.utc)
-    ist_now = utc_now + timedelta(hours=5, minutes=30)
+    ist_now = utc_now.astimezone(IST)
     
     is_market_hours = False
     if ist_now.weekday() < 5:  # Monday to Friday
@@ -403,28 +426,21 @@ def render_option_chain_tab(ticker_symbol, underlying_price, current_signal):
 # -------------------------------------------------------------
 # CONSTITUENTS & DICTIONARIES
 # -------------------------------------------------------------
+LOT_SIZES = {
+    "^NSEI": 75,
+    "^BSESN": 10,
+    "^NSEBANK": 15,
+    "^CNXIT": 25,
+    "^GSPC": 50,
+    "^DJI": 10,
+    "^NDX": 20
+}
+
 NIFTY_50_TICKERS = [
-    "ADANIENT.NS", "ADANIPORTS.NS", "APOLLOHOSP.NS", "ASIANPAINT.NS", "AXISBANK.NS",
-    "BAJAJ-AUTO.NS", "BAJFINANCE.NS", "BAJAJFINSV.NS", "BHARTIARTL.NS", "BPCL.NS",
-    "BRITANNIA.NS", "CIPLA.NS", "COALINDIA.NS", "DIVISLAB.NS", "DRREDDY.NS",
-    "EICHERMOT.NS", "GRASIM.NS", "HCLTECH.NS", "HDFCBANK.NS", "HDFCLIFE.NS",
-    "HEROMOTOCO.NS", "HINDALCO.NS", "HINDUNILVR.NS", "ICICIBANK.NS", "INDUSINDBK.NS",
-    "INFY.NS", "ITC.NS", "JSWSTEEL.NS", "KOTAKBANK.NS", "LT.NS",
-    "LTM.NS", "M&M.NS", "MARUTI.NS", "NESTLEIND.NS", "NTPC.NS",
-    "ONGC.NS", "POWERGRID.NS", "RELIANCE.NS", "SBILIFE.NS", "SBIN.NS",
-    "SUNPHARMA.NS", "TATACONSUM.NS", "TMPV.NS", "TATASTEEL.NS", "TCS.NS",
-    "TECHM.NS", "TITAN.NS", "ULTRACEMCO.NS", "WIPRO.NS"
+    "^NSEI", "^BSESN", "^NSEBANK", "^CNXIT", "^GSPC", "^DJI", "^NDX"
 ]
 
-NIFTY_NEXT_50_TICKERS = [
-    "ABB.NS", "ACC.NS", "ADANIENSOL.NS", "ADANIGREEN.NS", "ADANIPOWER.NS", "AMBUJACEM.NS",
-    "DMART.NS", "BANKBARODA.NS", "BEL.NS", "BOSCHLTD.NS", "CANBK.NS", "CGPOWER.NS",
-    "CHOLAFIN.NS", "COLPAL.NS", "DLF.NS", "GAIL.NS", "HAL.NS", "HAVELLS.NS",
-    "ICICIPRULI.NS", "IOC.NS", "IRCTC.NS", "IRFC.NS", "JINDALSTEL.NS", "JIOFIN.NS",
-    "LICI.NS", "MUTHOOTFIN.NS", "PIDILITIND.NS", "PFC.NS", "PNB.NS", "RECLTD.NS",
-    "SHREECEM.NS", "SIEMENS.NS", "SRF.NS", "TATAELXSI.NS", "TATAPOWER.NS", "TRENT.NS",
-    "TVSSMOTOR.NS", "UNITDSPR.NS", "VBL.NS", "ZOMATO.NS", "ZYDUSLIFE.NS"
-]
+NIFTY_NEXT_50_TICKERS = []
 
 
 
@@ -530,7 +546,7 @@ if app_mode == "Multi-Stock Dashboard":
     sig_filter = st.radio("Display Filter:", ["Show All Signals", "BUY & SELL Only", "BUY Only", "SELL Only"], horizontal=True)
 
     # Analyze all tickers
-    start_scan_time = datetime.now()
+    start_scan_time = datetime.now(timezone.utc)
     failed_scans = 0
     results = []
     
@@ -593,7 +609,7 @@ if app_mode == "Multi-Stock Dashboard":
                     qty = int(risk_amt / sl_dist) if sl_dist > 0 and sig != "HOLD" else 0
                     
                     # Generate time
-                    gen_time = datetime.now().strftime("%H:%M:%S")
+                    gen_time = datetime.now(IST).strftime("%H:%M:%S")
                     
                     results.append({
                         "Ticker": ticker_clean,
@@ -617,7 +633,7 @@ if app_mode == "Multi-Stock Dashboard":
             else:
                 failed_scans += 1
         
-        end_scan_time = datetime.now()
+        end_scan_time = datetime.now(timezone.utc)
         exec_duration = (end_scan_time - start_scan_time).total_seconds()
         
         if results:
@@ -626,7 +642,6 @@ if app_mode == "Multi-Stock Dashboard":
             # Send Telegram Transitions if credentials exist
             if token_input and chat_id_input:
                 if strategy_mode == "Intraday Trading (15m)":
-                    from cron_runner import get_last_intraday_signals, save_current_intraday_signals
                     last_sigs = get_last_intraday_signals()
                     current_sigs = {row['Ticker'] + ".NS": row['Signal'] for row in results}
                     
@@ -856,7 +871,7 @@ else:
     
     col_input1, col_input2 = st.columns(2)
     with col_input1:
-        symbol = st.text_input("Enter Ticker Symbol (e.g. RELIANCE.NS, TCS.NS, AAPL, TSLA)", "RELIANCE.NS")
+        symbol = st.text_input("Enter Ticker Symbol (e.g. ^NSEI, ^NSEBANK, ^BSESN, SPY)", "^NSEI")
     with col_input2:
         start_date = st.date_input("Analysis Start Date", value=pd.to_datetime("2024-01-01"))
         

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { RefreshCw, Calculator, X, TrendingUp, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Calculator, X, AlertTriangle } from 'lucide-react';
 
 export default function OptionChainTable() {
   const [symbol, setSymbol] = useState('NIFTY');
@@ -110,6 +110,7 @@ export default function OptionChainTable() {
           >
             <option value="NIFTY">NIFTY 50</option>
             <option value="BANKNIFTY">BANKNIFTY</option>
+            <option value="SENSEX">SENSEX</option>
           </select>
           <select
             value={expiry}
@@ -134,27 +135,29 @@ export default function OptionChainTable() {
         <table className="w-full text-xs text-left">
           <thead className="bg-slate-900/90 text-slate-400 font-bold border-b border-slate-800">
             <tr>
-              <th colSpan="4" className="text-center py-2 bg-emerald-950/20 text-emerald-400 border-r border-slate-800">
+              <th colSpan="5" className="text-center py-2 bg-emerald-950/20 text-emerald-400 border-r border-slate-800">
                 CALLS (CE)
               </th>
               <th className="text-center py-2 bg-amber-950/20 text-amber-400 font-extrabold">STRIKE</th>
-              <th colSpan="4" className="text-center py-2 bg-rose-950/20 text-rose-400 border-l border-slate-800">
+              <th colSpan="5" className="text-center py-2 bg-rose-950/20 text-rose-400 border-l border-slate-800">
                 PUTS (PE)
               </th>
             </tr>
             <tr className="border-b border-slate-800 text-[11px]">
-              <th className="py-2 px-3 text-right">OI</th>
-              <th className="py-2 px-3 text-right">Volume</th>
-              <th className="py-2 px-3 text-right">Chng %</th>
-              <th className="py-2 px-3 text-right border-r border-slate-800 text-emerald-400">LTP (Rs.)</th>
+              <th className="py-2 px-2 text-right">OI</th>
+              <th className="py-2 px-2 text-right">Volume</th>
+              <th className="py-2 px-2 text-right">Delta</th>
+              <th className="py-2 px-2 text-right">IV (%)</th>
+              <th className="py-2 px-2 text-right border-r border-slate-800 text-emerald-400">LTP (Rs.)</th>
               <th className="py-2 px-4 text-center font-extrabold bg-slate-900 text-white">Strike Price</th>
-              <th className="py-2 px-3 text-left border-l border-slate-800 text-rose-400">LTP (Rs.)</th>
-              <th className="py-2 px-3 text-left">Chng %</th>
-              <th className="py-2 px-3 text-left">Volume</th>
-              <th className="py-2 px-3 text-left">OI</th>
+              <th className="py-2 px-2 text-left border-l border-slate-800 text-rose-400">LTP (Rs.)</th>
+              <th className="py-2 px-2 text-left">IV (%)</th>
+              <th className="py-2 px-2 text-left">Delta</th>
+              <th className="py-2 px-2 text-left">Volume</th>
+              <th className="py-2 px-2 text-left">OI</th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-slate-800/60 font-mono">
+          <tbody className="divide-y divide-slate-800/60 font-mono text-[11px]">
             {chainData?.chain?.map((row) => {
               const isAtm = row.strike === chainData.atm_strike;
               const isCeInMoney = row.strike < chainData.spot_price;
@@ -170,18 +173,21 @@ export default function OptionChainTable() {
                   }`}
                 >
                   {/* CALLS */}
-                  <td className={`py-2 px-3 text-right ${isCeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
+                  <td className={`py-2 px-2 text-right ${isCeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
                     {row.ce_oi.toLocaleString()}
                   </td>
-                  <td className={`py-2 px-3 text-right ${isCeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
+                  <td className={`py-2 px-2 text-right ${isCeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
                     {row.ce_volume.toLocaleString()}
                   </td>
-                  <td className={`py-2 px-3 text-right font-bold ${row.ce_chng_pct >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {row.ce_chng_pct >= 0 ? `+${row.ce_chng_pct.toFixed(1)}%` : `${row.ce_chng_pct.toFixed(1)}%`}
+                  <td className={`py-2 px-2 text-right text-sky-400 ${isCeInMoney ? 'bg-slate-900/40' : ''}`}>
+                    {row.ce_delta.toFixed(2)}
+                  </td>
+                  <td className={`py-2 px-2 text-right text-slate-400 ${isCeInMoney ? 'bg-slate-900/40' : ''}`}>
+                    {row.ce_iv}%
                   </td>
                   <td
                     onClick={() => openCalculator(row.strike, 'CE', row.ce_ltp)}
-                    className="py-2 px-3 text-right font-extrabold text-emerald-400 cursor-pointer hover:bg-emerald-500/20 border-r border-slate-800 transition-colors"
+                    className="py-2 px-2 text-right font-extrabold text-emerald-400 cursor-pointer hover:bg-emerald-500/20 border-r border-slate-800 transition-colors"
                     title="Click to calculate Call option profit"
                   >
                     Rs.{row.ce_ltp.toFixed(2)}
@@ -196,23 +202,36 @@ export default function OptionChainTable() {
                   {/* PUTS */}
                   <td
                     onClick={() => openCalculator(row.strike, 'PE', row.pe_ltp)}
-                    className="py-2 px-3 text-left font-extrabold text-rose-400 cursor-pointer hover:bg-rose-500/20 border-l border-slate-800 transition-colors"
+                    className="py-2 px-2 text-left font-extrabold text-rose-400 cursor-pointer hover:bg-rose-500/20 border-l border-slate-800 transition-colors"
                     title="Click to calculate Put option profit"
                   >
                     Rs.{row.pe_ltp.toFixed(2)}
                   </td>
-                  <td className={`py-2 px-3 text-left font-bold ${row.pe_chng_pct >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>
-                    {row.pe_chng_pct >= 0 ? `+${row.pe_chng_pct.toFixed(1)}%` : `${row.pe_chng_pct.toFixed(1)}%`}
+                  <td className={`py-2 px-2 text-left text-slate-400 ${isPeInMoney ? 'bg-slate-900/40' : ''}`}>
+                    {row.pe_iv}%
                   </td>
-                  <td className={`py-2 px-3 text-left ${isPeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
+                  <td className={`py-2 px-2 text-left text-sky-400 ${isPeInMoney ? 'bg-slate-900/40' : ''}`}>
+                    {row.pe_delta.toFixed(2)}
+                  </td>
+                  <td className={`py-2 px-2 text-left ${isPeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
                     {row.pe_volume.toLocaleString()}
                   </td>
-                  <td className={`py-2 px-3 text-left ${isPeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
+                  <td className={`py-2 px-2 text-left ${isPeInMoney ? 'bg-slate-900/40 text-slate-300' : 'text-slate-400'}`}>
                     {row.pe_oi.toLocaleString()}
                   </td>
                 </tr>
               );
             })}
+            {(!chainData?.chain || chainData.chain.length === 0) && (
+              <tr>
+                <td colSpan="11" className="text-center py-8 text-slate-400">
+                  <div className="flex flex-col items-center justify-center space-y-2">
+                    <AlertTriangle className="w-5 h-5 text-amber-400" />
+                    <span>Live Option Chain data is currently unavailable (Market closed / feed offline).</span>
+                  </div>
+                </td>
+              </tr>
+            )}
           </tbody>
         </table>
       </div>

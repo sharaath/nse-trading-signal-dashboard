@@ -2,11 +2,17 @@
 *.db
 local_test.db
 market-signal-bot/local_test.db
+.env
+*.env
 market-signal-bot/.env
 
 # Python Bytecode
 __pycache__/
 *.pyc
+
+# Logs
+logs/
+market-signal-bot/logs/
 
 # Runtime generated cache & reports
 active_trades.json

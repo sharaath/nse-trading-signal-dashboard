@@ -1,6 +1,7 @@
 import os
 # Force testing session to run on in-memory SQLite instead of Postgres
 os.environ["DATABASE_URL"] = "sqlite:///:memory:"
+os.environ["SYSTEM_MODE"] = "SIMULATION"
 
 import pytest
 import pandas as pd
@@ -34,6 +35,12 @@ class MockDataProvider(MarketDataProvider):
             "Volume": [1000 + i * 10 for i in range(50)]
         }, index=dates)
         return df
+
+    def get_option_chain(self, symbol: str) -> dict:
+        return {}
+
+    def get_source_type(self) -> str:
+        return "PAPER/MOCK"
 
 def test_signal_generation():
     provider = MockDataProvider(mode="bullish")

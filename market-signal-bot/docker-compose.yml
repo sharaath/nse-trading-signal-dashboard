@@ -4,8 +4,6 @@ services:
   db:
     image: postgres:15-alpine
     container_name: msb-db
-    ports:
-      - "5432:5432"
     environment:
       POSTGRES_DB: marketsignalbot
       POSTGRES_USER: postgres
@@ -17,6 +15,7 @@ services:
       interval: 5s
       timeout: 5s
       retries: 5
+    restart: always
 
   api:
     build:
@@ -27,10 +26,20 @@ services:
       - "8000:8000"
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketsignalbot
+      - SYSTEM_MODE=${SYSTEM_MODE}
+      - REAL_ORDERS_ENABLED=${REAL_ORDERS_ENABLED}
+      - MARKET_DATA_PROVIDER=${MARKET_DATA_PROVIDER}
+      - FYERS_CLIENT_ID=${FYERS_CLIENT_ID}
+      - FYERS_SECRET_KEY=${FYERS_SECRET_KEY}
+      - FYERS_ACCESS_TOKEN=${FYERS_ACCESS_TOKEN}
+      - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - ENABLE_API_SCANNER=false
+      - ENABLE_TELEGRAM_IN_API=false
     depends_on:
       db:
         condition: service_healthy
-    restart: on-failure
+    restart: always
 
   worker:
     build:
@@ -39,14 +48,20 @@ services:
     container_name: msb-worker
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketsignalbot
+      - SYSTEM_MODE=${SYSTEM_MODE}
+      - REAL_ORDERS_ENABLED=${REAL_ORDERS_ENABLED}
+      - MARKET_DATA_PROVIDER=${MARKET_DATA_PROVIDER}
+      - FYERS_CLIENT_ID=${FYERS_CLIENT_ID}
+      - FYERS_SECRET_KEY=${FYERS_SECRET_KEY}
+      - FYERS_ACCESS_TOKEN=${FYERS_ACCESS_TOKEN}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
       - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
       - PERSONAL_USE_ONLY=true
-      - FORCE_SCAN=true  # Force scanning active outside trading hours for testing
+      - FORCE_SCAN=${FORCE_SCAN}
     depends_on:
       db:
         condition: service_healthy
-    restart: on-failure
+    restart: always
 
   bot:
     build:
@@ -55,11 +70,15 @@ services:
     container_name: msb-bot
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@db:5432/marketsignalbot
+      - SYSTEM_MODE=${SYSTEM_MODE}
+      - REAL_ORDERS_ENABLED=${REAL_ORDERS_ENABLED}
       - TELEGRAM_BOT_TOKEN=${TELEGRAM_BOT_TOKEN}
+      - TELEGRAM_CHAT_ID=${TELEGRAM_CHAT_ID}
+      - TELEGRAM_ALLOWED_USERS=${TELEGRAM_ALLOWED_USERS}
     depends_on:
       db:
         condition: service_healthy
-    restart: on-failure
+    restart: always
 
   frontend:
     build:
@@ -70,7 +89,7 @@ services:
       - "5173:5173"
     depends_on:
       - api
-    restart: on-failure
+    restart: always
 
 volumes:
   pgdata:

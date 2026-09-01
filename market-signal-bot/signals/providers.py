@@ -1,25 +1,9 @@
-from abc import ABC, abstractmethod
-import yfinance as yf
-import pandas as pd
+from signals.providers.base import MarketDataProvider
+from signals.providers.yfinance_provider import YFinanceDataProvider
+from signals.providers.mock_provider import MockDataProvider
+from signals.providers.realtime_provider import RealTimeMarketDataProvider
+from signals.providers import get_data_provider
 
-class MarketDataProvider(ABC):
-    @abstractmethod
-    def get_history(self, symbol: str, interval: str = "15m", period: str = "5d") -> pd.DataFrame:
-        """Fetch historical price data as a Pandas DataFrame with OHLCV columns."""
-        pass
-
-class YFinanceDataProvider(MarketDataProvider):
-    def get_history(self, symbol: str, interval: str = "15m", period: str = "5d") -> pd.DataFrame:
-        try:
-            # yfinance tickers for indices have prefix '^' (e.g. ^NSEI)
-            # Ensure correct format
-            df = yf.download(symbol, period=period, interval=interval, progress=False)
-            if df.empty:
-                return pd.DataFrame()
-            # Flatten columns if MultiIndex (common in yfinance download)
-            if isinstance(df.columns, pd.MultiIndex):
-                df.columns = df.columns.get_level_values(0)
-            df = df.loc[:, ~df.columns.duplicated()]
-            return df
-        except Exception:
-            return pd.DataFrame()
+# Backward compatibility aliases
+BrokerAPIProvider = RealTimeMarketDataProvider
+LicensedMarketDataProvider = RealTimeMarketDataProvider
